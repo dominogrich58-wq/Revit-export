@@ -13,7 +13,7 @@ import sheetpilot_setup
 sheetpilot_setup.ensure()
 
 from sheetpilot import config as sp_config            # noqa: E402
-from sheetpilot import naming, runner                 # noqa: E402
+from sheetpilot import naming, profiles, runner        # noqa: E402
 from sheetpilot import sheets as sheets_mod           # noqa: E402
 from sheetpilot.exporters import dwg as dwg_exporter  # noqa: E402
 
@@ -34,17 +34,33 @@ PROJECT_LABEL = "Projekt: "
 NO_MODIFIER = "bez upravy"
 
 
+STORE = sheetpilot_setup.store()
+
+
 def load_profile():
-    path = sheetpilot_setup.profile_path()
-    if os.path.isfile(path):
-        try:
-            import io
-            import json
-            with io.open(path, "r", encoding="utf-8") as handle:
-                return json.load(handle)
-        except Exception as exc:
-            logger.debug("Profil sa neda nacitat: %s", exc)
-    return sp_config.defaults()
+    """Nastavenia aktivneho profilu; ked ziadny nie je, predvolby."""
+    try:
+        return STORE.active()
+    except Exception as exc:
+        logger.debug("Aktivny profil sa neda nacitat: %s", exc)
+        return sp_config.defaults()
+
+
+def store_profile(normalized):
+    """Ulozi nastavenia do aktivneho profilu; prvy raz sa spyta na nazov."""
+    name = STORE.active_name()
+    if not name:
+        name = forms.ask_for_string(
+            default=profiles.DEFAULT_NAME, title="Ulozit ako profil",
+            prompt=("Pod akym nazvom ulozit tieto nastavenia?\n"
+                    "Profil sa da neskor spustit tlacidlom 'Spusti profil'."))
+    try:
+        effective = STORE.save(name or profiles.DEFAULT_NAME, normalized)
+        STORE.set_active(effective)
+        return effective
+    except profiles.ProfileError as exc:
+        logger.debug("Profil sa neda ulozit: %s", exc)
+        return None
 
 
 def text_or_empty(value):
@@ -283,7 +299,7 @@ def main():
         forms.alert(u"%s" % exc, title="Chybne nastavenia")
         return
 
-    sp_config.save(sheetpilot_setup.profile_path(), normalized)
+    saved_as = store_profile(normalized)
 
     with forms.ProgressBar(title="Export {value}/{max_value} - {title}",
                            cancellable=True) as progress_bar:
@@ -302,6 +318,8 @@ def main():
     for line in report.lines():
         output.print_md("    " + line)
     output.print_md("Log davky: `%s`" % log_path)
+    if saved_as:
+        output.print_md("Nastavenia ulozene do profilu **%s**." % saved_as)
 
     if report.has_failures():
         forms.alert(report.summary() + "\n\nDetaily najdes v okne vystupu "

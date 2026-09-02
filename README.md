@@ -21,20 +21,21 @@ rozhrania nad tým istým jadrom:
 | Ochrana proti prepisu | existujúci súbor sa preskočí alebo prepíše podľa nastavenia |
 | Jedinečné názvy | dva výkresy s rovnakým názvom nedostanú ten istý súbor (`… _2`) |
 | CSV log | po každej dávke sa uloží prehľad OK / preskočené / chyby |
-| Profily | nastavenia sa ukladajú do JSON a dajú sa prenášať medzi ľuďmi |
+| Pomenované profily | viac schém exportu vedľa seba, prepínanie jedným klikom, prenos medzi ľuďmi |
 
 ## Štruktúra repozitára
 
 ```
-lib/sheetpilot/          jadro (naming, config, výber výkresov, exportéry, report)
+lib/sheetpilot/         jadro (naming, config, profiles, výber výkresov,
+                        exportéry, report)
 dynamo/                 .dyn grafy + zdrojové Python skripty nodov
-pyrevit/                pyRevit extension (tlačidlá Export / Profil / Opakuj)
+pyrevit/                pyRevit extension (Export výkresov / Profily / Spusti profil)
 examples/               ukážkové JSON profily
 tools/build_dyn.py      generátor .dyn grafov zo skriptov v dynamo/python
 tests/                  unit testy logiky (bežia bez Revitu)
 ```
 
-Moduly `naming`, `config` a `report` nemajú žiadnu závislosť na Revit API,
+Moduly `naming`, `config`, `profiles` a `report` nemajú žiadnu závislosť na Revit API,
 preto sa dajú testovať a ladiť mimo Revitu.
 
 ## Inštalácia — Dynamo
@@ -83,9 +84,9 @@ Balík `sheetpilot` sa hľadá v tomto poradí:
 
 Na páse pribudne záložka **SheetPilot** s tromi tlačidlami:
 
-* **Export výkresov** — sprievodca: výkresy → formáty → schéma názvov → PDF spojiť? → DWG setup → priečinok.
-* **Profil nastavení** — zobrazenie, otvorenie, reset, import a export profilu.
-* **Opakuj posledný** — zopakuje posledný export bez dialógov (ideálne na pravidelné odovzdávky).
+* **Export výkresov** — sprievodca: výkresy → formáty → schéma názvov → PDF spojiť? → DWG setup → usporiadanie → priečinok.
+* **Profily** — správa pomenovaných profilov (nový, prepnúť, kópia, premenovať, zmazať, import, export).
+* **Spusti profil** — spustí uložený profil bez dialógov, ideálne na pravidelné odovzdávky.
 
 ## Schéma názvov súborov
 
@@ -140,7 +141,34 @@ Znaky, ktoré Windows v názve súboru nedovolí (`\ / : * ? " < > |`), sa nahra
 podčiarkovníkom; názov sa oreže na 180 znakov a rezervované názvy (`CON`, `PRN`…)
 dostanú prefix.
 
-## Profil (JSON)
+## Profily
+
+Nastavenia sa neukladajú do jedného súboru, ale do **pomenovaných profilov** —
+môžeš mať vedľa seba napríklad *DSP odovzdanie*, *Rýchly náhľad PDF*
+a *DWG pre statika* a prepínať medzi nimi jedným klikom.
+
+```
+%APPDATA%\SheetPilot\
+    profiles\
+        DSP odovzdanie.json
+        Rychly nahlad PDF.json
+    state.json          <- ktorý profil je aktívny
+```
+
+Ako s nimi pracovať:
+
+* **Export výkresov** načíta aktívny profil ako predvyplnenie a na konci doň
+  uloží, čo si nastavil. Pri úplne prvom exporte sa spýta na názov profilu.
+* **Profily** slúžia na správu — *Nový profil z predvolieb*, *Prepnúť aktívny*,
+  *Skopírovať aktívny* (dobré na variantu existujúceho nastavenia),
+  *Premenovať*, *Zmazať*, *Otvoriť v editore*, a import/export do súboru
+  na zdieľanie s kolegami.
+* **Spusti profil** ponúkne zoznam profilov a vybraný spustí bez ďalších otázok.
+
+Starý jednosúborový `profile.json` sa pri prvom spustení automaticky prenesie
+medzi pomenované profily pod názvom *Predvoleny*; pôvodný súbor sa nemaže.
+
+### Obsah profilu (JSON)
 
 Kompletné nastavenia s predvolbami sú v `lib/sheetpilot/config.py`, hotové ukážky
 v `examples/`. Kľúčové položky:
@@ -175,9 +203,9 @@ v `examples/`. Kľúčové položky:
 }
 ```
 
-Profil sa ukladá do `%APPDATA%\SheetPilot\profile.json` a dá sa cez tlačidlo
-**Profil nastavení** vyexportovať a rozdistribuovať v tíme, aby všetci odovzdávali
-rovnako pomenované súbory.
+Profil sa dá cez tlačidlo **Profily** vyexportovať do súboru a rozdistribuovať
+v tíme, aby všetci odovzdávali rovnako pomenované súbory. Kolega ho načíta tou
+istou cestou (*Načítať profil zo súboru*) a stačí mu prepísať výstupný adresár.
 
 ### Keď sa záložka neobjaví
 
@@ -220,7 +248,7 @@ Po overení sa dá `PyRevitTest.extension` pokojne zmazať.
 ## Vývoj
 
 ```bash
-PYTHONPATH=lib:tests python3 -m unittest discover -s tests -v   # 50 testov
+PYTHONPATH=lib:tests python3 -m unittest discover -s tests -v   # 101 testov
 python3 tools/build_dyn.py                                      # regenerácia .dyn grafov
 ```
 

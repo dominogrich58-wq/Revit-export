@@ -44,7 +44,22 @@ def ensure():
         + "\n  ".join(f for f in _candidates() if f))
 
 
-def profile_path():
-    """Cesta k ulozenemu profilu nastaveni."""
+def data_folder():
+    """Adresar s nastaveniami SheetPilotu pre prihlaseneho pouzivatela."""
     base = os.environ.get("APPDATA") or os.path.expanduser("~")
-    return os.path.join(base, "SheetPilot", "profile.json")
+    return os.path.join(base, "SheetPilot")
+
+
+def legacy_profile_path():
+    """Stary jednosuborovy profil - drzime ho kvoli prechodu na pomenovane."""
+    return os.path.join(data_folder(), "profile.json")
+
+
+def store():
+    """ProfileStore s pomenovanymi profilmi, po pripadnom preneseni stareho."""
+    ensure()
+    from sheetpilot.profiles import ProfileStore
+
+    profile_store = ProfileStore(data_folder())
+    profile_store.migrate_legacy(legacy_profile_path())
+    return profile_store
