@@ -18,6 +18,11 @@ DEFAULTS = {
     "output_folder": "",
     "formats": ["PDF"],
     "file_name_template": "{Sheet Number} - {Sheet Name}",
+    # Naklikane casti nazvu. Ked je zoznam neprazdny, ma prednost pred
+    # `file_name_template` - ten zostava ako rucne pisana alternativa.
+    "file_name_segments": [],
+    "file_name_prefix": "",
+    "file_name_suffix": "",
     "subfolder_per_format": True,
     "overwrite": True,
     "sheet_selection": {
@@ -46,7 +51,9 @@ DEFAULTS = {
     "dwg": {
         "export_setup": "",            # nazov ulozeneho DWG Export Setupu
         "file_version": "AutoCAD2018",
-        "merge_views": False,
+        # False = vsetko sa zlucí do jedneho DWG (bez xref suborov),
+        # True = pohlady na vykrese a linky sa exportuju ako externe referencie.
+        "external_references": False,
         "shared_coords": False,
     },
 }
@@ -115,11 +122,39 @@ def normalize(user_config=None):
         raise ConfigError("pdf.zoom musi byt cislo v percentach, dostal som %r" % zoom)
 
     from . import naming
-    naming.validate_template(config["file_name_template"])
+    segments = config.get("file_name_segments") or []
+    if not isinstance(segments, list):
+        raise ConfigError("file_name_segments musi byt zoznam casti nazvu.")
+    for segment in segments:
+        if not isinstance(segment, dict):
+            raise ConfigError("Cast nazvu musi byt objekt s klucmi %s, dostal "
+                              "som %r" % (", ".join(naming.SEGMENT_KEYS), segment))
+        modifier = (segment.get("modifier") or "").strip().lower()
+        if modifier and modifier not in naming.MODIFIERS:
+            raise ConfigError("Neznamy modifikator '%s'. Podporovane: %s"
+                              % (modifier, ", ".join(sorted(naming.MODIFIERS))))
+
+    naming.validate_template(effective_template(config))
     if config["pdf"]["combine"]:
         naming.validate_template(config["pdf"]["combined_file_name"])
 
     return config
+
+
+def effective_template(config):
+    """Sablona, ktora sa naozaj pouzije na skladanie nazvov.
+
+    Zdroj je bud zoznam naklikanych casti, alebo rucne napisana sablona;
+    okolo vysledku sa obali celkovy prefix a suffix. Funkcia nic nemeni
+    v konfiguracii, takze sa da volat opakovane bez toho, aby sa prefix
+    pridal dvakrat.
+    """
+    from . import naming
+    segments = config.get("file_name_segments") or []
+    base = (naming.build_template(segments) if segments
+            else config.get("file_name_template") or "")
+    return naming.build_template([], config.get("file_name_prefix") or "") \
+        + base + naming.build_template([], config.get("file_name_suffix") or "")
 
 
 def load(path):

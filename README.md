@@ -13,10 +13,11 @@ rozhrania nad tým istým jadrom:
 |---|---|
 | Export do PDF | natívny `PDFExportOptions` (Revit 2022+); pre staršie Revity záloha cez virtuálnu PDF tlačiareň |
 | Export do DWG | s použitím uloženého **DWG Export Setupu**, voliteľná verzia AutoCADu |
-| Vlastná schéma názvov | tokeny z parametrov výkresu a projektu, napr. `{Sheet Number} - {Sheet Name}` |
+| Vlastná schéma názvov | naklikaná z parametrov výkresu a projektu, s prefixom a suffixom pri každej časti |
+| Export DWG bez xref | všetko sa zlúči do jedného DWG na výkres, alebo sa vytvoria externé referencie |
 | Spojené PDF | všetky výkresy do jedného súboru s vlastným názvom |
 | Výber výkresov | ručne, podľa Sheet Setu, podľa čísel, alebo filtrom (prefix / názov / parameter) |
-| Podpriečinky | `PDF/` a `DWG/` sa vytvoria automaticky pri exporte viacerých formátov |
+| Usporiadanie výstupu | buď podpriečinky `PDF/` a `DWG/`, alebo všetko dokopy v jednom |
 | Ochrana proti prepisu | existujúci súbor sa preskočí alebo prepíše podľa nastavenia |
 | Jedinečné názvy | dva výkresy s rovnakým názvom nedostanú ten istý súbor (`… _2`) |
 | CSV log | po každej dávke sa uloží prehľad OK / preskočené / chyby |
@@ -88,6 +89,31 @@ Na páse pribudne záložka **SheetPilot** s tromi tlačidlami:
 
 ## Schéma názvov súborov
 
+Názov sa dá poskladať dvoma spôsobmi — naklikaním v pyRevite, alebo napísaním
+šablóny. Obe cesty vedú k tomu istému, klikanie len šablónu skladá za teba.
+
+### Naklikanie (tlačidlo Export výkresov)
+
+V kroku *Schéma názvu* dostaneš okno so **živou ukážkou** na prvom vybranom
+výkrese a zoznamom častí názvu. Časť = jeden parameter obalený prefixom
+a suffixom. Ponuka parametrov sa načíta **zo skutočného modelu** — vstavané
+tokeny, parametre výkresu (`Výkres: …`) a parametre projektu (`Projekt: …`),
+takže si nemusíš pamätať, ako sa čo volá.
+
+| Voľba | Čo robí |
+|---|---|
+| Pridať parameter | vyberieš parameter, potom text pred ním a za ním |
+| Upraviť poslednú časť | náhradná hodnota (napr. `00` pri prázdnej revízii) a veľkosť písmen |
+| Odobrať poslednú časť | krok späť |
+| Prefix / suffix celého názvu | text na začiatku a konci každého súboru, napr. `DSP_` a `_na-schvalenie` |
+| Začať od hotovej schémy | päť pripravených schém |
+| Napísať šablónu ručne | pre tých, čo si chcú tokeny napísať sami |
+
+Poskladané časti sa uložia do profilu (`file_name_segments`), takže pri ďalšom
+exporte nadviažeš tam, kde si skončil.
+
+### Šablóna
+
 ```
 {Názov parametra[|náhradná hodnota][:modifikátor]}
 ```
@@ -124,6 +150,12 @@ v `examples/`. Kľúčové položky:
   "output_folder": "C:\\Export\\Vykresy",
   "formats": ["PDF", "DWG"],
   "file_name_template": "{Sheet Number} - {Sheet Name}",
+  "file_name_segments": [                // naklikané časti; majú prednosť
+    {"parameter": "Sheet Number", "prefix": "", "suffix": ""},
+    {"parameter": "Sheet Name", "prefix": " - ", "suffix": ""}
+  ],
+  "file_name_prefix": "DSP_",            // pred celým názvom
+  "file_name_suffix": "",                // za celým názvom
   "subfolder_per_format": true,        // PDF/ a DWG/ podpriečinky
   "overwrite": true,
   "sheet_selection": {
@@ -135,7 +167,11 @@ v `examples/`. Kľúčové položky:
     "parameter_equals": {}
   },
   "pdf": { "combine": false, "raster_quality": "High", "color_depth": "Color" },
-  "dwg": { "export_setup": "", "file_version": "AutoCAD2018" }
+  "dwg": {
+    "export_setup": "",
+    "file_version": "AutoCAD2018",
+    "external_references": false         // false = jeden DWG bez xref súborov
+  }
 }
 ```
 
@@ -173,6 +209,10 @@ Po overení sa dá `PyRevitTest.extension` pokojne zmazať.
   Revit lepí názvy pohľadov za názov súboru).
 * Nastavenia vrstiev, hrúbok čiar a textov pre DWG sa neriešia tu — použije sa
   uložený **DWG Export Setup** z modelu (`dwg.export_setup`).
+* Voľba `dwg.external_references` sa v Revit API mapuje na `MergedViews`
+  (zlúčené = žiadne xref súbory). Overené to je len na úrovni volania API,
+  nie na skutočnom exporte — po prvom behu si skontroluj, či vedľa hlavných
+  DWG nepribudli súbory navyše.
 * Placeholder výkresy sa preskakujú, exportovať sa nedajú.
 * Ak je cieľový súbor otvorený v inej aplikácii, export ho preskočí a zapíše
   dôvod do logu namiesto pádu celej dávky.

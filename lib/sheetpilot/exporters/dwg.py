@@ -7,6 +7,10 @@ nastavenia vrstiev, hladin, textov a liniek. Inak sa pouziju predvolby Revitu.
 
 Exportuje sa vzdy po jednom vykrese - vtedy Revit pouzije presne nazov,
 ktory mu dame. Pri viacerych vykresoch naraz si k nazvu prilepi nazvy pohladov.
+
+Volba `external_references` riadi, ci Revit vytvori vedla hlavneho DWG este
+xref subory pre pohlady na vykrese a pre linkovane modely. Predvolene je
+vypnuta, takze vznikne jeden samostatny DWG na vykres.
 """
 
 import os
@@ -86,7 +90,9 @@ def build_options(doc, dwg_config):
         if acad is not None:
             _set(options, "FileVersion", acad)
 
-    _set(options, "MergedViews", bool(dwg_config.get("merge_views")))
+    # MergedViews je opak volby "Export views on sheets and links as
+    # external references" v DWG Export Setupe: zlucene = ziadne xref subory.
+    _set(options, "MergedViews", not bool(dwg_config.get("external_references")))
     if dwg_config.get("shared_coords"):
         _set(options, "SharedCoords", True)
     return options

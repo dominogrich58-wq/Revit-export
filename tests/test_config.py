@@ -88,3 +88,44 @@ class RoundTripTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class EffectiveTemplateTest(unittest.TestCase):
+    def base(self, **overrides):
+        data = {"output_folder": tempfile.gettempdir()}
+        data.update(overrides)
+        return config.normalize(data)
+
+    def test_manual_template_is_used_when_there_are_no_segments(self):
+        result = self.base(file_name_template="{Sheet Number}")
+        self.assertEqual(config.effective_template(result), "{Sheet Number}")
+
+    def test_segments_win_over_manual_template(self):
+        result = self.base(
+            file_name_template="{Sheet Number}",
+            file_name_segments=[{"parameter": "Sheet Name"}])
+        self.assertEqual(config.effective_template(result), "{Sheet Name}")
+
+    def test_prefix_and_suffix_wrap_the_result(self):
+        result = self.base(file_name_prefix="DSP_", file_name_suffix="_v1",
+                           file_name_segments=[{"parameter": "Sheet Number"}])
+        self.assertEqual(config.effective_template(result),
+                         "DSP_{Sheet Number}_v1")
+
+    def test_repeated_normalize_does_not_double_the_prefix(self):
+        once = self.base(file_name_prefix="DSP_",
+                         file_name_segments=[{"parameter": "Sheet Number"}])
+        twice = config.normalize(once)
+        self.assertEqual(config.effective_template(twice),
+                         config.effective_template(once))
+
+    def test_unknown_modifier_in_a_segment_is_rejected(self):
+        self.assertRaises(config.ConfigError, self.base,
+                          file_name_segments=[{"parameter": "Sheet Name",
+                                               "modifier": "kurziva"}])
+
+    def test_segments_must_be_a_list_of_objects(self):
+        self.assertRaises(config.ConfigError, self.base,
+                          file_name_segments={"parameter": "Sheet Name"})
+        self.assertRaises(config.ConfigError, self.base,
+                          file_name_segments=["Sheet Name"])

@@ -144,3 +144,91 @@ def deduplicate(names):
         seen[candidate.lower()] = 1
         result.append(candidate)
     return result
+
+
+# --- Skladanie sablony z casti (pre klikacie rozhranie) ---------------------
+#
+# Cast (segment) je jeden usek nazvu: parameter obaleny prefixom a suffixom.
+# Segment bez parametra je cisty text - hodi sa na oddelovace.
+#
+#   {"parameter": "Sheet Number", "prefix": "",    "suffix": ""}
+#   {"parameter": "Sheet Name",   "prefix": " - ", "suffix": ""}
+#   {"parameter": "",             "prefix": "_v2", "suffix": ""}
+#
+# Segmenty su ulozene v profile a `build_template` z nich zlozi tu istu
+# sablonu, aku by pouzivatel napisal rucne. Sablona zostava jedinym
+# formatom, ktoremu rozumie `render`.
+
+SEGMENT_KEYS = ("parameter", "prefix", "suffix", "fallback", "modifier")
+
+
+def _literal(text):
+    """Text okolo tokenu - zatvorky by rozbili sablonu, tak ich vyhodime."""
+    return (text or "").replace("{", "").replace("}", "")
+
+
+def build_template(segments, prefix="", suffix=""):
+    """Zlozi sablonu nazvu zo zoznamu casti a celkoveho prefixu/suffixu."""
+    parts = [_literal(prefix)]
+    for segment in segments or []:
+        name = (segment.get("parameter") or "").strip()
+        parts.append(_literal(segment.get("prefix")))
+        if name:
+            token = name
+            fallback = (segment.get("fallback") or "").strip()
+            if fallback:
+                token += "|" + _literal(fallback)
+            modifier = (segment.get("modifier") or "").strip().lower()
+            if modifier in MODIFIERS:
+                token += ":" + modifier
+            parts.append("{%s}" % token)
+        parts.append(_literal(segment.get("suffix")))
+    parts.append(_literal(suffix))
+    return "".join(parts)
+
+
+def segments_from_template(template):
+    """Rozlozi sablonu spat na casti, aby sa dala upravovat v rozhrani.
+
+    Text pred tokenom sa stane jeho prefixom, text za poslednym tokenom
+    suffixom poslednej casti. `build_template(segments_from_template(t)) == t`
+    pre kazdu platnu sablonu.
+    """
+    segments, position = [], 0
+    for match in TOKEN.finditer(template or ""):
+        name, fallback, modifier = parse_token(match.group(1))
+        segments.append({
+            "parameter": name,
+            "prefix": template[position:match.start()],
+            "suffix": "",
+            "fallback": fallback,
+            "modifier": modifier or "",
+        })
+        position = match.end()
+
+    trailing = (template or "")[position:]
+    if trailing:
+        if segments:
+            segments[-1]["suffix"] = trailing
+        else:
+            segments.append({"parameter": "", "prefix": trailing, "suffix": "",
+                             "fallback": "", "modifier": ""})
+    return segments
+
+
+def describe_segment(segment):
+    """Citatelny popis casti pre zoznam v rozhrani."""
+    name = (segment.get("parameter") or "").strip()
+    core = "{%s}" % name if name else "(text)"
+    fallback = (segment.get("fallback") or "").strip()
+    if fallback:
+        core += " ak prazdne: '%s'" % fallback
+    modifier = (segment.get("modifier") or "").strip()
+    if modifier:
+        core += " (%s)" % modifier
+    prefix, suffix = segment.get("prefix") or "", segment.get("suffix") or ""
+    if prefix:
+        core = "'%s' + %s" % (prefix, core)
+    if suffix:
+        core = "%s + '%s'" % (core, suffix)
+    return core

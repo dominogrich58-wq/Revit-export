@@ -105,3 +105,85 @@ class ValidateTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class BuildTemplateTest(unittest.TestCase):
+    def test_segments_with_prefix_and_suffix(self):
+        segments = [{"parameter": "Sheet Number"},
+                    {"parameter": "Sheet Name", "prefix": " - "}]
+        self.assertEqual(naming.build_template(segments, "DSP_", "_v1"),
+                         "DSP_{Sheet Number} - {Sheet Name}_v1")
+
+    def test_fallback_and_modifier_end_up_in_the_token(self):
+        segments = [{"parameter": "Current Revision", "prefix": "R",
+                     "fallback": "00", "modifier": "upper"}]
+        self.assertEqual(naming.build_template(segments),
+                         "R{Current Revision|00:upper}")
+
+    def test_unknown_modifier_is_dropped(self):
+        segments = [{"parameter": "Sheet Name", "modifier": "kurziva"}]
+        self.assertEqual(naming.build_template(segments), "{Sheet Name}")
+
+    def test_segment_without_parameter_is_plain_text(self):
+        segments = [{"parameter": "Sheet Number"},
+                    {"parameter": "", "prefix": "_final"}]
+        self.assertEqual(naming.build_template(segments),
+                         "{Sheet Number}_final")
+
+    def test_braces_in_literals_are_stripped(self):
+        segments = [{"parameter": "Sheet Name", "prefix": "{x}"}]
+        self.assertEqual(naming.build_template(segments, "}", "{"),
+                         "x{Sheet Name}")
+
+    def test_empty_input_gives_empty_template(self):
+        self.assertEqual(naming.build_template([]), "")
+
+
+class SegmentsFromTemplateTest(unittest.TestCase):
+    def round_trip(self, template):
+        return naming.build_template(naming.segments_from_template(template))
+
+    def test_round_trip_keeps_the_template(self):
+        for template in ("{Sheet Number} - {Sheet Name}",
+                         "DSP_{Sheet Number}_v1",
+                         "R{Current Revision|00:upper}",
+                         "bez tokenov",
+                         ""):
+            self.assertEqual(self.round_trip(template), template)
+
+    def test_literal_before_token_becomes_its_prefix(self):
+        segments = naming.segments_from_template("DSP_{Sheet Number}")
+        self.assertEqual(segments[0]["prefix"], "DSP_")
+        self.assertEqual(segments[0]["parameter"], "Sheet Number")
+
+    def test_trailing_literal_becomes_suffix_of_last_segment(self):
+        segments = naming.segments_from_template("{Sheet Number}_v1")
+        self.assertEqual(segments[-1]["suffix"], "_v1")
+
+    def test_template_without_tokens_is_one_text_segment(self):
+        segments = naming.segments_from_template("vykres")
+        self.assertEqual(len(segments), 1)
+        self.assertEqual(segments[0]["parameter"], "")
+
+    def test_fallback_and_modifier_survive(self):
+        segment = naming.segments_from_template("{Current Revision|00:upper}")[0]
+        self.assertEqual(segment["fallback"], "00")
+        self.assertEqual(segment["modifier"], "upper")
+
+
+class DescribeSegmentTest(unittest.TestCase):
+    def test_plain_parameter(self):
+        self.assertEqual(naming.describe_segment({"parameter": "Sheet Name"}),
+                         "{Sheet Name}")
+
+    def test_all_details(self):
+        described = naming.describe_segment(
+            {"parameter": "Current Revision", "prefix": "R", "suffix": "!",
+             "fallback": "00", "modifier": "upper"})
+        for expected in ("'R'", "{Current Revision}", "00", "upper", "'!'"):
+            self.assertIn(expected, described)
+
+    def test_text_only_segment(self):
+        self.assertEqual(naming.describe_segment({"parameter": "",
+                                                  "prefix": "_final"}),
+                         "'_final' + (text)")

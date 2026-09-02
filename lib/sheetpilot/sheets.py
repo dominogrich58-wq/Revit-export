@@ -161,3 +161,49 @@ def make_resolver(doc, sheet):
         return None
 
     return resolve
+
+
+# Tokeny, ktore vie `make_resolver` vyhodnotit bez toho, aby existovali
+# ako parameter v modeli.
+BUILTIN_TOKENS = (
+    "Sheet Number",
+    "Sheet Name",
+    "Current Revision",
+    "Current Revision Date",
+    "Current Revision Description",
+    "File Name",
+    "Date",
+    "Time",
+    "yyyy",
+    "yyyymmdd",
+)
+
+
+def _parameter_names(element):
+    if element is None:
+        return []
+    names = set()
+    for parameter in element.Parameters:
+        try:
+            definition = parameter.Definition
+        except Exception:
+            continue
+        if definition is not None and definition.Name:
+            names.add(definition.Name)
+    return sorted(names)
+
+
+def available_parameters(doc, sheet):
+    """Co sa da pouzit v nazve suboru.
+
+    Vracia (vstavane tokeny, parametre vykresu, parametre projektu).
+    Parametre, ktore uz pokryva vstavany token, sa zo zoznamov vypustia,
+    aby si pouzivatel nevyberal to iste dvakrat.
+    """
+    builtin_lower = set(name.lower() for name in BUILTIN_TOKENS)
+    sheet_params = [name for name in _parameter_names(sheet)
+                    if name.lower() not in builtin_lower]
+    seen = builtin_lower | set(name.lower() for name in sheet_params)
+    project_params = [name for name in _parameter_names(doc.ProjectInformation)
+                      if name.lower() not in seen]
+    return list(BUILTIN_TOKENS), sheet_params, project_params

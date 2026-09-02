@@ -55,11 +55,19 @@ class DwgOptionsTest(unittest.TestCase):
         options = dwg.build_options(self.doc, {"file_version": "AutoCAD1997"})
         self.assertIsNone(options.FileVersion)
 
-    def test_merge_views_and_shared_coords(self):
+    def test_no_external_references_merges_everything(self):
         self.use()
-        options = dwg.build_options(self.doc, {"merge_views": True,
-                                               "shared_coords": True})
+        options = dwg.build_options(self.doc, {"external_references": False})
         self.assertTrue(options.MergedViews)
+
+    def test_external_references_turn_merging_off(self):
+        self.use()
+        options = dwg.build_options(self.doc, {"external_references": True})
+        self.assertFalse(options.MergedViews)
+
+    def test_shared_coords(self):
+        self.use()
+        options = dwg.build_options(self.doc, {"shared_coords": True})
         self.assertTrue(options.SharedCoords)
 
     def test_export_setups_lists_names(self):

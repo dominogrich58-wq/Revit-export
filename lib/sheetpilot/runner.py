@@ -4,7 +4,7 @@
 import os
 
 from . import naming, sheets as sheets_mod
-from .config import normalize
+from .config import effective_template, normalize
 from .exporters import dwg as dwg_exporter
 from .exporters import pdf as pdf_exporter
 from .report import Report
@@ -40,7 +40,7 @@ def plan(doc, sheet_list, config):
 
     Vracia (dvojice [(sheet, nazov)], zoznam chybajucich tokenov).
     """
-    template = config["file_name_template"]
+    template = effective_template(config)
     missing, names = [], []
     for sheet in sheet_list:
         per_sheet = []

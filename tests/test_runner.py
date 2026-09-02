@@ -39,6 +39,17 @@ class PlanTest(unittest.TestCase):
         pairs, _ = runner.plan(self.doc, [FakeSheet("A-101", "X")], self.config)
         self.assertEqual(pairs[0][1], "Bytovka_A-101")
 
+    def test_plan_uses_segments_with_global_prefix_and_suffix(self):
+        self.config = normalize({
+            "output_folder": tempfile.gettempdir(),
+            "file_name_prefix": "DSP_",
+            "file_name_suffix": "_v1",
+            "file_name_segments": [{"parameter": "Sheet Number"},
+                                   {"parameter": "Sheet Name", "prefix": "-"}],
+        })
+        pairs, _ = runner.plan(self.doc, [FakeSheet("A-101", "Rez")], self.config)
+        self.assertEqual(pairs[0][1], "DSP_A-101-Rez_v1")
+
     def test_illegal_characters_in_sheet_name_are_sanitized(self):
         pairs, _ = runner.plan(self.doc, [FakeSheet("A-101", "Rez A/A")], self.config)
         self.assertEqual(pairs[0][1], "A-101 - Rez A_A")

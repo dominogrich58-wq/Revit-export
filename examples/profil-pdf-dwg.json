@@ -1,6 +1,9 @@
 {
   "output_folder": "C:\\Export\\Vykresy",
-  "formats": ["PDF", "DWG"],
+  "formats": [
+    "PDF",
+    "DWG"
+  ],
   "file_name_template": "{Project Number}-{Sheet Number}-{Sheet Name} R{Current Revision|00}",
   "subfolder_per_format": true,
   "overwrite": true,
@@ -28,7 +31,32 @@
   "dwg": {
     "export_setup": "",
     "file_version": "AutoCAD2018",
-    "merge_views": false,
+    "external_references": false,
     "shared_coords": false
-  }
+  },
+  "file_name_segments": [
+    {
+      "parameter": "Project Number",
+      "prefix": "",
+      "suffix": ""
+    },
+    {
+      "parameter": "Sheet Number",
+      "prefix": "-",
+      "suffix": ""
+    },
+    {
+      "parameter": "Sheet Name",
+      "prefix": "-",
+      "suffix": ""
+    },
+    {
+      "parameter": "Current Revision",
+      "prefix": " R",
+      "suffix": "",
+      "fallback": "00"
+    }
+  ],
+  "file_name_prefix": "",
+  "file_name_suffix": ""
 }
