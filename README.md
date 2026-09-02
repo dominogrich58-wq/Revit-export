@@ -61,12 +61,24 @@ a DWG Export Setupy v modeli existujú — hodí sa pri ladení nastavení.
 pyrevit extend ui ProSheetsLite <url-repozitara>
 ```
 
-alebo ručne: priečinok `pyrevit/ProSheetsLite.extension` skopíruj medzi svoje
-pyRevit extensions a daj **Reload**. Balík `prosheets` sa hľadá v tomto poradí:
+alebo ručne (odporúčané, keď pyRevit používaš prvýkrát):
+
+1. Nainštaluj **pyRevit** z [pyrevitlabs.io](https://pyrevitlabs.io) — je to samostatný
+   Windows inštalátor, nie doplnok do Revitu. Revit musí byť pri inštalácii zavretý.
+2. Vytvor si priečinok pre extensions, napr. `C:\pyRevitExtensions`, a skopíruj doň
+   celý priečinok `ProSheetsLite.extension` (názov musí končiť na `.extension`).
+3. Otvor Revit → pás **pyRevit** → **Settings** → sekcia **Custom Extension Directories**
+   → **Add Folder** → vyber `C:\pyRevitExtensions` (**nie** samotný `.extension` priečinok!)
+   → **Save Settings and Reload**.
+
+Balík `prosheets` sa hľadá v tomto poradí:
 
 1. premenná prostredia `PROSHEETS_LIB`,
 2. priečinok `lib` v koreni tohto repozitára (keď je extension v repozitári),
-3. `%APPDATA%\ProSheetsLite\lib`.
+3. `lib` priamo v extensione (sebestačná kópia),
+4. `%APPDATA%\ProSheetsLite\lib`,
+5. `C:\ProSheetsLite\lib` — teda to isté miesto ako pri Dynamo návode, takže
+   stačí jedna kópia knižnice pre obe rozhrania.
 
 Na páse pribudne záložka **ProSheets** s tromi tlačidlami:
 

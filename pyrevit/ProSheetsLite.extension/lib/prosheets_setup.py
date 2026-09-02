@@ -4,7 +4,10 @@
 Hlada v tomto poradi:
   1. premenna prostredia PROSHEETS_LIB
   2. adresar `lib` vedla extensionu (ked je extension sucastou repozitara)
-  3. %APPDATA%\\ProSheetsLite\\lib (rucna instalacia)
+  3. `lib` priamo v extensione (sebestacna kopia)
+  4. %APPDATA%\\ProSheetsLite\\lib
+  5. C:\\ProSheetsLite\\lib (miesto z navodu pre Dynamo - aby stacila
+     jedna kopia kniznice pre Dynamo aj pyRevit)
 """
 
 import os
@@ -24,6 +27,8 @@ def _candidates():
     appdata = os.environ.get("APPDATA")
     if appdata:
         yield os.path.join(appdata, "ProSheetsLite", "lib")
+    yield os.path.join(os.environ.get("SystemDrive", "C:") + os.sep,
+                       "ProSheetsLite", "lib")
 
 
 def ensure():
@@ -34,8 +39,9 @@ def ensure():
                 sys.path.append(folder)
             return folder
     raise ImportError(
-        "Balik 'prosheets' sa nenasiel. Skopiruj priecinok 'lib/prosheets' do "
-        "%APPDATA%\\ProSheetsLite\\lib alebo nastav premennu PROSHEETS_LIB.")
+        "Balik 'prosheets' sa nenasiel. Skopiruj priecinok 'prosheets' "
+        "(z 'lib' v repozitari) do niektoreho z tychto miest:\n  "
+        + "\n  ".join(f for f in _candidates() if f))
 
 
 def profile_path():
