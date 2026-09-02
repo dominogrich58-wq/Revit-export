@@ -30,18 +30,52 @@ def export_setups(doc):
                   .OfClass(DB.ExportDWGSettings))
 
 
+def _set(options, name, value):
+    """Nastavi vlastnost, ak ju dana verzia Revitu pozna."""
+    if not hasattr(options, name):
+        return False
+    try:
+        setattr(options, name, value)
+        return True
+    except Exception:
+        return False
+
+
+def predefined_options(doc, setup_name):
+    """DWGExportOptions z ulozeneho Export Setupu, alebo None ak setup nie je.
+
+    Revit ponuka dve cesty k tomu istemu a kazda verzia ma inu z nich:
+    staticku `DWGExportOptions.GetPredefinedOptions`, alebo najdenie
+    elementu `ExportDWGSettings` a jeho `GetDWGExportOptions()`. Skusame
+    obe, aby kod nezavisel na jednej konkretnej verzii API.
+    """
+    DB = db()
+    getter = getattr(DB.DWGExportOptions, "GetPredefinedOptions", None)
+    if getter is not None:
+        try:
+            options = getter(doc, setup_name)
+        except Exception:
+            options = None
+        if options is not None:
+            return options
+
+    for settings in DB.FilteredElementCollector(doc).OfClass(DB.ExportDWGSettings):
+        if settings.Name == setup_name:
+            return settings.GetDWGExportOptions()
+    return None
+
+
 def build_options(doc, dwg_config):
     """Zostavi DWGExportOptions - z ulozeneho setupu alebo z predvolieb."""
     DB = db()
     setup_name = (dwg_config.get("export_setup") or "").strip()
     options = None
     if setup_name:
-        settings = DB.ExportDWGSettings.GetPredefinedSettings(doc, setup_name)
-        if settings is None:
+        options = predefined_options(doc, setup_name)
+        if options is None:
             raise KeyError("DWG Export Setup '%s' sa v modeli nenasiel. "
                            "Dostupne: %s"
                            % (setup_name, ", ".join(export_setups(doc)) or "ziadne"))
-        options = settings.GetDWGExportOptions()
     if options is None:
         options = DB.DWGExportOptions()
 
@@ -50,11 +84,11 @@ def build_options(doc, dwg_config):
     if version and hasattr(DB, "ACADVersion"):
         acad = getattr(DB.ACADVersion, version, None)
         if acad is not None:
-            options.FileVersion = acad
+            _set(options, "FileVersion", acad)
 
-    options.MergedViews = bool(dwg_config.get("merge_views"))
-    if dwg_config.get("shared_coords") and hasattr(DB, "ExportSharedCoordinates"):
-        options.SharedCoords = True
+    _set(options, "MergedViews", bool(dwg_config.get("merge_views")))
+    if dwg_config.get("shared_coords"):
+        _set(options, "SharedCoords", True)
     return options
 
 
