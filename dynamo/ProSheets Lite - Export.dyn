@@ -1,0 +1,495 @@
+{
+  "Uuid": "9ae65a50-2fcf-5291-aa3d-2902163f02c6",
+  "IsCustomNode": false,
+  "Description": "Davkovy export Revit vykresov do PDF a DWG.",
+  "Name": "ProSheets Lite - Export",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "Id": "2a65cef81dcd50bda6287a2aa2410328",
+      "NodeType": "BooleanInputNode",
+      "ConcreteType": "CoreNodeModels.Input.BoolSelector, CoreNodeModels",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "57031a4448995aa9bb614c9380c6bd7e",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Run - spustenie exportu",
+      "InputValue": false,
+      "NodeValue": "false"
+    },
+    {
+      "Id": "e3ddecd0ffb353c6817af0276e7eb421",
+      "NodeType": "StringInputNode",
+      "ConcreteType": "CoreNodeModels.Input.StringInput, CoreNodeModels",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "066e16423896592ba7da4e517a1cfa85",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Adresar s balikom prosheets",
+      "InputValue": "C:\\ProSheetsLite\\lib",
+      "NodeValue": "C:\\ProSheetsLite\\lib"
+    },
+    {
+      "Id": "33497e43aed75e7d8da6d4c3eaa6a2dd",
+      "NodeType": "CodeBlockNode",
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "84c26ea33679555285cf01893bd295df",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Code block",
+      "Code": "[];"
+    },
+    {
+      "Id": "7c599e2650ca5aeeb1859a99b468a61b",
+      "NodeType": "StringInputNode",
+      "ConcreteType": "CoreNodeModels.Input.StringInput, CoreNodeModels",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "c3da9420f60b50079498c390ded13adb",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Vystupny adresar",
+      "InputValue": "C:\\Export",
+      "NodeValue": "C:\\Export"
+    },
+    {
+      "Id": "fdd82a39dbd55f0d8933338ff36e36f6",
+      "NodeType": "CodeBlockNode",
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "2670fe583e5f5cabb173d97a622c91b6",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Code block",
+      "Code": "[\"PDF\",\"DWG\"];"
+    },
+    {
+      "Id": "04d55004e4b153eca4c10c066cb5254c",
+      "NodeType": "StringInputNode",
+      "ConcreteType": "CoreNodeModels.Input.StringInput, CoreNodeModels",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "4cba9b5964315dd0b09a6b85b2171449",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Sablona nazvu suboru",
+      "InputValue": "{Sheet Number} - {Sheet Name}",
+      "NodeValue": "{Sheet Number} - {Sheet Name}"
+    },
+    {
+      "Id": "75d266eeb49b56f1b0dc0b41412989de",
+      "NodeType": "BooleanInputNode",
+      "ConcreteType": "CoreNodeModels.Input.BoolSelector, CoreNodeModels",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "ec9cc3d8a857593ead3d431d5e881608",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Spojit PDF do jedneho suboru",
+      "InputValue": false,
+      "NodeValue": "false"
+    },
+    {
+      "Id": "a27148f82bd55494b3a83c914ca8386b",
+      "NodeType": "StringInputNode",
+      "ConcreteType": "CoreNodeModels.Input.StringInput, CoreNodeModels",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "db259baa9a4354bf8412248e8fd656ae",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Nazov DWG Export Setupu",
+      "InputValue": "",
+      "NodeValue": ""
+    },
+    {
+      "Id": "879147ffaca950b7a95c324bf1df2a56",
+      "NodeType": "PythonScriptNode",
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "Inputs": [
+        {
+          "Id": "c60b425b4bc559358eae0c2bb6991d5a",
+          "Name": "IN[0]",
+          "Description": "Run",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "f95c7e6a71615217ab1cc5d873338384",
+          "Name": "IN[1]",
+          "Description": "LibPath",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "3aa3c230b1a6523fbfd16eed9cc1d1b3",
+          "Name": "IN[2]",
+          "Description": "Sheets",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "14f9546585fd58c685b7239d9cff4110",
+          "Name": "IN[3]",
+          "Description": "OutputFolder",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "5dc37c249c7e578a8e05837a1f1c0151",
+          "Name": "IN[4]",
+          "Description": "Formats",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "b4b92d6baf60527daba6773109deabe3",
+          "Name": "IN[5]",
+          "Description": "FileNameTemplate",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "7d1717f9ebfc580bb46f81bedc0ad78f",
+          "Name": "IN[6]",
+          "Description": "CombinePDF",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "3e9e1af5c4ae5aea9ded4daecba210e4",
+          "Name": "IN[7]",
+          "Description": "DWGExportSetup",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "f7d7ee38d2ec51d8904fd959a15d3c7b",
+          "Name": "OUT",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Python skript ProSheets Lite",
+      "Code": "# -*- coding: utf-8 -*-\n\"\"\"ProSheets Lite - Dynamo Python node pre davkovy export vykresov.\n\nVstupy:\n  IN[0]  Run              bool    - export sa spusti az pri True\n  IN[1]  LibPath          string  - adresar s balikom `prosheets` (napr. C:\\\\ProSheetsLite\\\\lib)\n  IN[2]  Sheets           list    - konkretne vykresy z Dynama; prazdne = podla Selection\n  IN[3]  OutputFolder     string  - vystupny adresar\n  IN[4]  Formats          list    - napr. [\"PDF\", \"DWG\"]\n  IN[5]  FileNameTemplate string  - napr. \"{Sheet Number} - {Sheet Name}\"\n  IN[6]  CombinePDF       bool    - vsetky vykresy do jedneho PDF\n  IN[7]  DWGExportSetup   string  - nazov ulozeneho DWG Export Setupu (\"\" = predvolby)\n\nVystup: zoznam riadkov s vysledkom pre kazdy vykres + suhrn.\n\"\"\"\n\nimport os\nimport sys\nimport traceback\n\nimport clr\nclr.AddReference(\"RevitServices\")\nfrom RevitServices.Persistence import DocumentManager\nfrom RevitServices.Transactions import TransactionManager\n\n\ndef _input(index, default=None):\n    try:\n        value = IN[index]            # noqa: F821 - IN dodava Dynamo\n    except (IndexError, NameError):\n        return default\n    return default if value is None else value\n\n\ndef _as_list(value):\n    if value is None:\n        return []\n    if isinstance(value, (list, tuple)):\n        return [v for v in value if v not in (None, \"\")]\n    return [value]\n\n\ndef main():\n    if not _input(0, False):\n        return [\"Prepni Run na True a export sa spusti.\"]\n\n    lib_path = _input(1, \"\")\n    if lib_path and lib_path not in sys.path:\n        sys.path.append(lib_path)\n    try:\n        from prosheets import runner\n    except ImportError:\n        return [\"Balik 'prosheets' sa nenasiel. Do vstupu LibPath zadaj adresar, \"\n                \"ktory obsahuje priecinok 'prosheets' (v repozitari je to 'lib').\",\n                \"Aktualna hodnota LibPath: %r\" % lib_path]\n\n    doc = DocumentManager.Instance.CurrentDBDocument\n    # Export sa nesmie diat v otvorenej transakcii, ktoru Dynamo drzi.\n    TransactionManager.Instance.ForceCloseTransaction()\n\n    selected = _as_list(_input(2))\n    sheet_numbers = []\n    for item in selected:\n        sheet = UnwrapElement(item)  # noqa: F821 - UnwrapElement dodava Dynamo\n        if sheet is not None:\n            sheet_numbers.append(sheet.SheetNumber)\n\n    config = {\n        \"output_folder\": _input(3, \"\"),\n        \"formats\": _as_list(_input(4, [\"PDF\"])) or [\"PDF\"],\n        \"file_name_template\": _input(5, \"{Sheet Number} - {Sheet Name}\"),\n        \"pdf\": {\"combine\": bool(_input(6, False))},\n        \"dwg\": {\"export_setup\": _input(7, \"\") or \"\"},\n        \"sheet_selection\": ({\"mode\": \"numbers\", \"numbers\": sheet_numbers}\n                            if sheet_numbers else {\"mode\": \"all\"}),\n    }\n\n    report = runner.run(doc, config)\n    log = report.write_csv(config[\"output_folder\"])\n    return report.lines() + [\"Log davky: %s\" % log]\n\n\ntry:\n    OUT = main()\nexcept Exception:\n    OUT = [\"Export zlyhal:\"] + traceback.format_exc().splitlines()\n",
+      "Engine": "CPython3",
+      "EngineName": "CPython3",
+      "VariableInputPorts": true
+    },
+    {
+      "Id": "079ca9f34124562bb6e3939922fcfd97",
+      "NodeType": "ExtensionNode",
+      "ConcreteType": "CoreNodeModels.Watch, CoreNodeModels",
+      "Inputs": [
+        {
+          "Id": "50010ff40d2f51489efce1fc3bf4bc44",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "3a36da11369355ef83bac721fc056c5b",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Vypis vysledku",
+      "WatchWidth": 460.0,
+      "WatchHeight": 260.0
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "57031a4448995aa9bb614c9380c6bd7e",
+      "End": "c60b425b4bc559358eae0c2bb6991d5a",
+      "Id": "80924065b183565e89943c8f98bf50f2",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "066e16423896592ba7da4e517a1cfa85",
+      "End": "f95c7e6a71615217ab1cc5d873338384",
+      "Id": "e016b992b7d55928b05cf89afa04ccd0",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "84c26ea33679555285cf01893bd295df",
+      "End": "3aa3c230b1a6523fbfd16eed9cc1d1b3",
+      "Id": "08ae5fbe32b7594bb90c1749d255a98b",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "c3da9420f60b50079498c390ded13adb",
+      "End": "14f9546585fd58c685b7239d9cff4110",
+      "Id": "3ecbc02e938d5f5b88871c88f6b06697",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "2670fe583e5f5cabb173d97a622c91b6",
+      "End": "5dc37c249c7e578a8e05837a1f1c0151",
+      "Id": "15e52fe67b6e5b6d8187b68815684fad",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "4cba9b5964315dd0b09a6b85b2171449",
+      "End": "b4b92d6baf60527daba6773109deabe3",
+      "Id": "29a18ce1e5995fbfa76af188aa617088",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "ec9cc3d8a857593ead3d431d5e881608",
+      "End": "7d1717f9ebfc580bb46f81bedc0ad78f",
+      "Id": "a9fd1831e4b054f1979e37cced050ece",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "db259baa9a4354bf8412248e8fd656ae",
+      "End": "3e9e1af5c4ae5aea9ded4daecba210e4",
+      "Id": "d1a834048b7d5ded9ee73838ffa5d628",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "f7d7ee38d2ec51d8904fd959a15d3c7b",
+      "End": "50010ff40d2f51489efce1fc3bf4bc44",
+      "Id": "52816f202a4756269baacf87411f0e21",
+      "IsHidden": "False"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Author": "ProSheets Lite",
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": true,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.13.1.3887",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "_Background Preview",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "ConnectorPins": [],
+    "NodeViews": [
+      {
+        "Id": "2a65cef81dcd50bda6287a2aa2410328",
+        "Name": "Run",
+        "IsSetAsInput": true,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 0.0,
+        "Y": 0.0
+      },
+      {
+        "Id": "e3ddecd0ffb353c6817af0276e7eb421",
+        "Name": "LibPath",
+        "IsSetAsInput": true,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 0.0,
+        "Y": 110.0
+      },
+      {
+        "Id": "33497e43aed75e7d8da6d4c3eaa6a2dd",
+        "Name": "Sheets (volitelne)",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 0.0,
+        "Y": 220.0
+      },
+      {
+        "Id": "7c599e2650ca5aeeb1859a99b468a61b",
+        "Name": "OutputFolder",
+        "IsSetAsInput": true,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 0.0,
+        "Y": 330.0
+      },
+      {
+        "Id": "fdd82a39dbd55f0d8933338ff36e36f6",
+        "Name": "Formats",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 0.0,
+        "Y": 440.0
+      },
+      {
+        "Id": "04d55004e4b153eca4c10c066cb5254c",
+        "Name": "FileNameTemplate",
+        "IsSetAsInput": true,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 0.0,
+        "Y": 550.0
+      },
+      {
+        "Id": "75d266eeb49b56f1b0dc0b41412989de",
+        "Name": "CombinePDF",
+        "IsSetAsInput": true,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 0.0,
+        "Y": 660.0
+      },
+      {
+        "Id": "a27148f82bd55494b3a83c914ca8386b",
+        "Name": "DWGExportSetup",
+        "IsSetAsInput": true,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 0.0,
+        "Y": 770.0
+      },
+      {
+        "Id": "879147ffaca950b7a95c324bf1df2a56",
+        "Name": "ProSheets Lite - Export",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 560.0,
+        "Y": 240.0
+      },
+      {
+        "Id": "079ca9f34124562bb6e3939922fcfd97",
+        "Name": "Vysledok",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 940.0,
+        "Y": 240.0
+      }
+    ],
+    "Annotations": [],
+    "X": 0.0,
+    "Y": 0.0,
+    "Zoom": 0.75
+  }
+}

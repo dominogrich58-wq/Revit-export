@@ -1,0 +1,15 @@
+{
+  "output_folder": "C:\\Export\\Odovzdanie",
+  "formats": ["PDF"],
+  "file_name_template": "{Sheet Number} - {Sheet Name}",
+  "sheet_selection": {
+    "mode": "set",
+    "set_name": "DSP - odovzdanie"
+  },
+  "pdf": {
+    "combine": true,
+    "combined_file_name": "{Project Number}_DSP_{yyyymmdd}",
+    "raster_quality": "Presentation",
+    "color_depth": "Color"
+  }
+}

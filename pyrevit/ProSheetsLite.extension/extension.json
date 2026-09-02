@@ -1,0 +1,6 @@
+{
+  "name": "ProSheetsLite",
+  "description": "Davkovy export Revit vykresov do PDF a DWG (nahrada za DiRoots ProSheets).",
+  "author": "ProSheets Lite",
+  "default_enabled": true
+}

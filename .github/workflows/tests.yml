@@ -1,0 +1,20 @@
+name: tests
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  unittest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Unit testy (logika bez Revit API)
+        run: PYTHONPATH=lib:tests python -m unittest discover -s tests -v
+      - name: Kontrola, ze .dyn grafy su aktualne
+        run: |
+          python tools/build_dyn.py
+          git diff --exit-code -- dynamo

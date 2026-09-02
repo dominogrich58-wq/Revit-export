@@ -1,0 +1,34 @@
+{
+  "output_folder": "C:\\Export\\Vykresy",
+  "formats": ["PDF", "DWG"],
+  "file_name_template": "{Project Number}-{Sheet Number}-{Sheet Name} R{Current Revision|00}",
+  "subfolder_per_format": true,
+  "overwrite": true,
+  "sheet_selection": {
+    "mode": "filter",
+    "number_prefix": "A-",
+    "name_contains": "",
+    "parameter_equals": {}
+  },
+  "pdf": {
+    "combine": false,
+    "combined_file_name": "{File Name} - vykresy {Date}",
+    "raster_quality": "High",
+    "color_depth": "Color",
+    "zoom": 100,
+    "hide_crop_boundaries": true,
+    "hide_scope_boxes": true,
+    "hide_reference_planes": true,
+    "hide_unreferenced_view_tags": true,
+    "mask_coincident_lines": false,
+    "view_links_in_blue": false,
+    "always_use_raster": false,
+    "stop_on_error": false
+  },
+  "dwg": {
+    "export_setup": "",
+    "file_version": "AutoCAD2018",
+    "merge_views": false,
+    "shared_coords": false
+  }
+}
