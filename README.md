@@ -80,7 +80,7 @@ Balík `prosheets` sa hľadá v tomto poradí:
 5. `C:\ProSheetsLite\lib` — teda to isté miesto ako pri Dynamo návode, takže
    stačí jedna kópia knižnice pre obe rozhrania.
 
-Na páse pribudne záložka **ProSheets** s tromi tlačidlami:
+Na páse pribudne záložka **ProSheetsLite** s tromi tlačidlami:
 
 * **Export výkresov** — sprievodca: výkresy → formáty → schéma názvov → PDF spojiť? → DWG setup → priečinok.
 * **Profil nastavení** — zobrazenie, otvorenie, reset, import a export profilu.
@@ -142,6 +142,24 @@ v `examples/`. Kľúčové položky:
 Profil sa ukladá do `%APPDATA%\ProSheetsLite\profile.json` a dá sa cez tlačidlo
 **Profil nastavení** vyexportovať a rozdistribuovať v tíme, aby všetci odovzdávali
 rovnako pomenované súbory.
+
+### Keď sa záložka neobjaví
+
+V `pyrevit/PyRevitTest.extension` je minimálna testovacia extension s jediným
+tlačidlom, ktorá nezávisí na ničom z ProSheets Lite. Zaregistruj ju rovnako ako
+hlavnú a spusti:
+
+* **tlačidlo Test sa objaví a funguje** → pyRevit je v poriadku, problém je
+  v balíku ProSheetsLite,
+* **neobjaví sa** → problém je v pyRevite alebo v ceste zadanej v Custom
+  Extension Directories.
+
+Chyba `Can not de/activate native item: Name: <nieco>` znamená, že názov záložky
+sa zráža s existujúcou záložkou iného doplnku. Preto sa záložka volá
+**ProSheetsLite**, a nie ProSheets — ten názov už používa DiRoots ProSheets.
+Ak by kolidovala s niečím ďalším, stačí premenovať priečinok `ProSheetsLite.tab`.
+
+Po overení sa dá `PyRevitTest.extension` pokojne zmazať.
 
 ## Obmedzenia, o ktorých je dobré vedieť
 
