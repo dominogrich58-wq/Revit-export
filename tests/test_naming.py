@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import unittest
 
-from prosheets import naming
+from sheetpilot import naming
 
 
 class ParseTokenTest(unittest.TestCase):

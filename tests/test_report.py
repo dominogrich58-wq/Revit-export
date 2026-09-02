@@ -5,7 +5,7 @@ import shutil
 import tempfile
 import unittest
 
-from prosheets import report as report_mod
+from sheetpilot import report as report_mod
 
 
 class ReportTest(unittest.TestCase):

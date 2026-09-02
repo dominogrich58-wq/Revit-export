@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-"""ProSheets Lite - pomocny node: zoznam vykresov, Sheet Setov a DWG setupov.
+"""SheetPilot - pomocny node: zoznam vykresov, Sheet Setov a DWG setupov.
 
 Vstupy:
-  IN[0] LibPath  string - adresar s balikom `prosheets`
+  IN[0] LibPath  string - adresar s balikom `sheetpilot`
   IN[1] SheetSet string - ak je vyplneny, vrati len vykresy z tohto Sheet Setu
 
 Vystup: [zoznam vykresov, nazvy Sheet Setov, nazvy DWG Export Setupov]
@@ -20,8 +20,8 @@ def main():
     lib_path = IN[0] if len(IN) > 0 and IN[0] else ""   # noqa: F821
     if lib_path and lib_path not in sys.path:
         sys.path.append(lib_path)
-    from prosheets import sheets as sheets_mod
-    from prosheets.exporters import dwg as dwg_exporter
+    from sheetpilot import sheets as sheets_mod
+    from sheetpilot.exporters import dwg as dwg_exporter
 
     doc = DocumentManager.Instance.CurrentDBDocument
     set_name = IN[1] if len(IN) > 1 and IN[1] else ""   # noqa: F821

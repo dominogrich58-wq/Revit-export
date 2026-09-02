@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-"""ProSheets Lite - Dynamo Python node pre davkovy export vykresov.
+"""SheetPilot - Dynamo Python node pre davkovy export vykresov.
 
 Vstupy:
   IN[0]  Run              bool    - export sa spusti az pri True
-  IN[1]  LibPath          string  - adresar s balikom `prosheets` (napr. C:\\ProSheetsLite\\lib)
+  IN[1]  LibPath          string  - adresar s balikom `sheetpilot` (napr. C:\\SheetPilot\\lib)
   IN[2]  Sheets           list    - konkretne vykresy z Dynama; prazdne = podla Selection
   IN[3]  OutputFolder     string  - vystupny adresar
   IN[4]  Formats          list    - napr. ["PDF", "DWG"]
@@ -48,10 +48,10 @@ def main():
     if lib_path and lib_path not in sys.path:
         sys.path.append(lib_path)
     try:
-        from prosheets import runner
+        from sheetpilot import runner
     except ImportError:
-        return ["Balik 'prosheets' sa nenasiel. Do vstupu LibPath zadaj adresar, "
-                "ktory obsahuje priecinok 'prosheets' (v repozitari je to 'lib').",
+        return ["Balik 'sheetpilot' sa nenasiel. Do vstupu LibPath zadaj adresar, "
+                "ktory obsahuje priecinok 'sheetpilot' (v repozitari je to 'lib').",
                 "Aktualna hodnota LibPath: %r" % lib_path]
 
     doc = DocumentManager.Instance.CurrentDBDocument

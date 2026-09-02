@@ -1,4 +1,4 @@
-# ProSheets Lite — dávkový export Revit výkresov do PDF a DWG
+# SheetPilot — dávkový export Revit výkresov do PDF a DWG
 
 Vlastná náhrada za **DiRoots ProSheets**: vyberieš výkresy, nastavíš schému názvov
 súborov a jedným spustením ich vyexportuješ do PDF a DWG. K dispozícii sú dve
@@ -25,7 +25,7 @@ rozhrania nad tým istým jadrom:
 ## Štruktúra repozitára
 
 ```
-lib/prosheets/          jadro (naming, config, výber výkresov, exportéry, report)
+lib/sheetpilot/          jadro (naming, config, výber výkresov, exportéry, report)
 dynamo/                 .dyn grafy + zdrojové Python skripty nodov
 pyrevit/                pyRevit extension (tlačidlá Export / Profil / Opakuj)
 examples/               ukážkové JSON profily
@@ -38,10 +38,10 @@ preto sa dajú testovať a ladiť mimo Revitu.
 
 ## Inštalácia — Dynamo
 
-1. Skopíruj priečinok `lib` napríklad do `C:\ProSheetsLite\lib`
-   (musí v ňom zostať podpriečinok `prosheets`).
-2. Otvor `dynamo/ProSheets Lite - Export.dyn` v Dynamo for Revit.
-3. Do vstupu **LibPath** zadaj `C:\ProSheetsLite\lib`.
+1. Skopíruj priečinok `lib` napríklad do `C:\SheetPilot\lib`
+   (musí v ňom zostať podpriečinok `sheetpilot`).
+2. Otvor `dynamo/SheetPilot - Export.dyn` v Dynamo for Revit.
+3. Do vstupu **LibPath** zadaj `C:\SheetPilot\lib`.
 4. Vyplň **OutputFolder**, **Formats** (`["PDF"]`, `["DWG"]` alebo oboje)
    a **FileNameTemplate**.
 5. Voliteľne pripoj do vstupu **Sheets** výkresy z Dynama (napr. z node
@@ -49,7 +49,7 @@ preto sa dajú testovať a ladiť mimo Revitu.
    exportujú sa všetky výkresy v modeli.
 6. Prepni **Run** na `True`.
 
-Graf `ProSheets Lite - Zoznam výkresov.dyn` vypíše, aké výkresy, Sheet Sety
+Graf `SheetPilot - Zoznam výkresov.dyn` vypíše, aké výkresy, Sheet Sety
 a DWG Export Setupy v modeli existujú — hodí sa pri ladení nastavení.
 
 > Python nody sú nastavené na engine **CPython3**. V Revite 2021 a staršom
@@ -58,7 +58,7 @@ a DWG Export Setupy v modeli existujú — hodí sa pri ladení nastavení.
 ## Inštalácia — pyRevit
 
 ```
-pyrevit extend ui ProSheetsLite <url-repozitara>
+pyrevit extend ui SheetPilot <url-repozitara>
 ```
 
 alebo ručne (odporúčané, keď pyRevit používaš prvýkrát):
@@ -66,21 +66,21 @@ alebo ručne (odporúčané, keď pyRevit používaš prvýkrát):
 1. Nainštaluj **pyRevit** z [pyrevitlabs.io](https://pyrevitlabs.io) — je to samostatný
    Windows inštalátor, nie doplnok do Revitu. Revit musí byť pri inštalácii zavretý.
 2. Vytvor si priečinok pre extensions, napr. `C:\pyRevitExtensions`, a skopíruj doň
-   celý priečinok `ProSheetsLite.extension` (názov musí končiť na `.extension`).
+   celý priečinok `SheetPilot.extension` (názov musí končiť na `.extension`).
 3. Otvor Revit → pás **pyRevit** → **Settings** → sekcia **Custom Extension Directories**
    → **Add Folder** → vyber `C:\pyRevitExtensions` (**nie** samotný `.extension` priečinok!)
    → **Save Settings and Reload**.
 
-Balík `prosheets` sa hľadá v tomto poradí:
+Balík `sheetpilot` sa hľadá v tomto poradí:
 
-1. premenná prostredia `PROSHEETS_LIB`,
+1. premenná prostredia `SHEETPILOT_LIB`,
 2. priečinok `lib` v koreni tohto repozitára (keď je extension v repozitári),
 3. `lib` priamo v extensione (sebestačná kópia),
-4. `%APPDATA%\ProSheetsLite\lib`,
-5. `C:\ProSheetsLite\lib` — teda to isté miesto ako pri Dynamo návode, takže
+4. `%APPDATA%\SheetPilot\lib`,
+5. `C:\SheetPilot\lib` — teda to isté miesto ako pri Dynamo návode, takže
    stačí jedna kópia knižnice pre obe rozhrania.
 
-Na páse pribudne záložka **ProSheetsLite** s tromi tlačidlami:
+Na páse pribudne záložka **SheetPilot** s tromi tlačidlami:
 
 * **Export výkresov** — sprievodca: výkresy → formáty → schéma názvov → PDF spojiť? → DWG setup → priečinok.
 * **Profil nastavení** — zobrazenie, otvorenie, reset, import a export profilu.
@@ -116,7 +116,7 @@ dostanú prefix.
 
 ## Profil (JSON)
 
-Kompletné nastavenia s predvolbami sú v `lib/prosheets/config.py`, hotové ukážky
+Kompletné nastavenia s predvolbami sú v `lib/sheetpilot/config.py`, hotové ukážky
 v `examples/`. Kľúčové položky:
 
 ```jsonc
@@ -139,31 +139,31 @@ v `examples/`. Kľúčové položky:
 }
 ```
 
-Profil sa ukladá do `%APPDATA%\ProSheetsLite\profile.json` a dá sa cez tlačidlo
+Profil sa ukladá do `%APPDATA%\SheetPilot\profile.json` a dá sa cez tlačidlo
 **Profil nastavení** vyexportovať a rozdistribuovať v tíme, aby všetci odovzdávali
 rovnako pomenované súbory.
 
 ### Keď sa záložka neobjaví
 
 V `pyrevit/PyRevitTest.extension` je minimálna testovacia extension s jediným
-tlačidlom, ktorá nezávisí na ničom z ProSheets Lite. Zaregistruj ju rovnako ako
+tlačidlom, ktorá nezávisí na ničom zo SheetPilotu. Zaregistruj ju rovnako ako
 hlavnú a spusti:
 
 * **tlačidlo Test sa objaví a funguje** → pyRevit je v poriadku, problém je
-  v balíku ProSheetsLite,
+  v balíku SheetPilot,
 * **neobjaví sa** → problém je v pyRevite alebo v ceste zadanej v Custom
   Extension Directories.
 
 Chyba `Can not de/activate native item: Name: <nieco>` znamená, že názov záložky
 sa zráža s existujúcou záložkou iného doplnku. Preto sa záložka volá
-**ProSheetsLite**, a nie ProSheets — ten názov už používa DiRoots ProSheets.
-Ak by kolidovala s niečím ďalším, stačí premenovať priečinok `ProSheetsLite.tab`.
+**SheetPilot**, a nie ProSheets — ten názov už používa DiRoots ProSheets.
+Ak by kolidovala s niečím ďalším, stačí premenovať priečinok `SheetPilot.tab`.
 
 Po overení sa dá `PyRevitTest.extension` pokojne zmazať.
 
 ## Obmedzenia, o ktorých je dobré vedieť
 
-* **PDF vyžaduje Revit 2022+.** Staršie verzie nemajú `PDFExportOptions`; v `lib/prosheets/exporters/pdf.py`
+* **PDF vyžaduje Revit 2022+.** Staršie verzie nemajú `PDFExportOptions`; v `lib/sheetpilot/exporters/pdf.py`
   je funkcia `print_via_driver()`, ktorá tlačí cez virtuálnu PDF tlačiareň, ale
   závisí od konkrétneho ovládača na stanici.
 * PDF sa exportuje po jednom výkrese s `Combine = True`. Je to zámer — len v tomto

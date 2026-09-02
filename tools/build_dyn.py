@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Generator Dynamo grafov (.dyn) pre ProSheets Lite.
+"""Generator Dynamo grafov (.dyn) pre SheetPilot.
 
 Grafy sa generuju z Python skriptov v `dynamo/python/`, aby kod existoval
 len na jednom mieste - v .dyn subore je totiz Python vlozeny ako JSON retazec
@@ -96,7 +96,7 @@ def python_node(name, code, port_names):
                  {"Code": code, "Engine": "CPython3",
                   "EngineName": "CPython3",
                   "VariableInputPorts": True,
-                  "Description": "Python skript ProSheets Lite"})
+                  "Description": "Python skript SheetPilot"})
 
 
 def watch_node(name):
@@ -145,7 +145,7 @@ def graph(name, description, nodes, connectors, views):
         "Connectors": connectors,
         "Dependencies": [],
         "NodeLibraryDependencies": [],
-        "Author": "ProSheets Lite",
+        "Author": "SheetPilot",
         "Bindings": [],
         "View": {
             "Dynamo": {
@@ -177,8 +177,8 @@ def read_script(file_name):
 def build_export_graph():
     prefix = "export"
     run = bool_input(prefix + ".run", False, "Run - spustenie exportu")
-    lib = string_input(prefix + ".lib", r"C:\ProSheetsLite\lib",
-                       "Adresar s balikom prosheets")
+    lib = string_input(prefix + ".lib", r"C:\SheetPilot\lib",
+                       "Adresar s balikom sheetpilot")
     sheets = code_block(prefix + ".sheets", "[];")
     folder = string_input(prefix + ".folder", r"C:\Export",
                           "Vystupny adresar")
@@ -202,18 +202,18 @@ def build_export_graph():
               "FileNameTemplate", "CombinePDF", "DWGExportSetup"]
     views = [node_view(node, 0, index * 110, label)
              for index, (node, label) in enumerate(zip(sources, labels))]
-    views.append(node_view(script, 560, 240, "ProSheets Lite - Export"))
+    views.append(node_view(script, 560, 240, "SheetPilot - Export"))
     views.append(node_view(watch, 940, 240, "Vysledok"))
 
-    return graph("ProSheets Lite - Export",
+    return graph("SheetPilot - Export",
                  "Davkovy export Revit vykresov do PDF a DWG.",
                  sources + [script, watch], connectors, views)
 
 
 def build_list_graph():
     prefix = "list"
-    lib = string_input(prefix + ".lib", r"C:\ProSheetsLite\lib",
-                       "Adresar s balikom prosheets")
+    lib = string_input(prefix + ".lib", r"C:\SheetPilot\lib",
+                       "Adresar s balikom sheetpilot")
     sheet_set = string_input(prefix + ".set", "", "Nazov Sheet Setu (volitelne)")
     script = python_node(prefix + ".script", read_script("list_sheets_node.py"),
                          ["LibPath", "SheetSet"])
@@ -226,10 +226,10 @@ def build_list_graph():
 
     views = [node_view(lib, 0, 0, "LibPath"),
              node_view(sheet_set, 0, 110, "SheetSet"),
-             node_view(script, 480, 40, "ProSheets Lite - Zoznam vykresov"),
+             node_view(script, 480, 40, "SheetPilot - Zoznam vykresov"),
              node_view(watch, 860, 40, "Vykresy / Sheet Sety / DWG setupy")]
 
-    return graph("ProSheets Lite - Zoznam vykresov",
+    return graph("SheetPilot - Zoznam vykresov",
                  "Vypise vykresy, Sheet Sety a DWG Export Setupy v modeli.",
                  sources + [script, watch], connectors, views)
 
@@ -243,8 +243,8 @@ def write(graph_data, file_name):
 
 
 def main():
-    for builder, file_name in ((build_export_graph, "ProSheets Lite - Export.dyn"),
-                               (build_list_graph, "ProSheets Lite - Zoznam vykresov.dyn")):
+    for builder, file_name in ((build_export_graph, "SheetPilot - Export.dyn"),
+                               (build_list_graph, "SheetPilot - Zoznam vykresov.dyn")):
         print("zapisane: %s" % write(builder(), file_name))
 
 

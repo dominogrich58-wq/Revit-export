@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""ProSheets Lite - davkovy export vykresov do PDF a DWG."""
+"""SheetPilot - davkovy export vykresov do PDF a DWG."""
 
 __title__ = "Export\nvykresov"
 __doc__ = ("Vyberie vykresy, formaty a schemu nazvov, potom davkovo "
@@ -9,12 +9,12 @@ import os
 
 from pyrevit import forms, revit, script
 
-import prosheets_setup
-prosheets_setup.ensure()
+import sheetpilot_setup
+sheetpilot_setup.ensure()
 
-from prosheets import config as ps_config      # noqa: E402
-from prosheets import naming, runner           # noqa: E402
-from prosheets.exporters import dwg as dwg_exporter   # noqa: E402
+from sheetpilot import config as sp_config      # noqa: E402
+from sheetpilot import naming, runner           # noqa: E402
+from sheetpilot.exporters import dwg as dwg_exporter   # noqa: E402
 
 logger = script.get_logger()
 output = script.get_output()
@@ -31,7 +31,7 @@ TEMPLATE_PRESETS = [
 
 
 def load_profile():
-    path = prosheets_setup.profile_path()
+    path = sheetpilot_setup.profile_path()
     if os.path.isfile(path):
         try:
             import io, json
@@ -39,7 +39,7 @@ def load_profile():
                 return json.load(handle)
         except Exception as exc:
             logger.debug("Profil sa neda nacitat: %s", exc)
-    return ps_config.defaults()
+    return sp_config.defaults()
 
 
 def ask_template(previous):
@@ -80,7 +80,7 @@ def main():
     sheets = [s for s in sheets if not s.IsPlaceholder]
     if not sheets:
         forms.alert("Vybrane boli len placeholder vykresy, tie sa exportovat "
-                    "nedaju.", title="ProSheets Lite")
+                    "nedaju.", title="SheetPilot")
         return
 
     profile = load_profile()
@@ -128,12 +128,12 @@ def main():
     profile.setdefault("dwg", {})["export_setup"] = dwg_setup
 
     try:
-        normalized = ps_config.normalize(profile)
-    except ps_config.ConfigError as exc:
+        normalized = sp_config.normalize(profile)
+    except sp_config.ConfigError as exc:
         forms.alert(u"%s" % exc, title="Chybne nastavenia")
         return
 
-    ps_config.save(prosheets_setup.profile_path(), normalized)
+    sp_config.save(sheetpilot_setup.profile_path(), normalized)
 
     with forms.ProgressBar(title="Export {value}/{max_value} - {title}",
                            cancellable=True) as progress_bar:
@@ -148,16 +148,16 @@ def main():
 
     log_path = report.write_csv(normalized["output_folder"])
 
-    output.print_md("### ProSheets Lite - vysledok exportu")
+    output.print_md("### SheetPilot - vysledok exportu")
     for line in report.lines():
         output.print_md("    " + line)
     output.print_md("Log davky: `%s`" % log_path)
 
     if report.has_failures():
         forms.alert(report.summary() + "\n\nDetaily najdes v okne vystupu "
-                    "a v CSV logu.", title="ProSheets Lite")
+                    "a v CSV logu.", title="SheetPilot")
     elif forms.alert(report.summary() + "\n\nOtvorit vystupny adresar?",
-                     title="ProSheets Lite", yes=True, no=True):
+                     title="SheetPilot", yes=True, no=True):
         os.startfile(normalized["output_folder"])
 
 

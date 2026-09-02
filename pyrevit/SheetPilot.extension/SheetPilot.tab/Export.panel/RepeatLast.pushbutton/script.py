@@ -8,25 +8,25 @@ import os
 
 from pyrevit import forms, revit, script
 
-import prosheets_setup
-prosheets_setup.ensure()
+import sheetpilot_setup
+sheetpilot_setup.ensure()
 
-from prosheets import config as ps_config   # noqa: E402
-from prosheets import runner                # noqa: E402
+from sheetpilot import config as sp_config   # noqa: E402
+from sheetpilot import runner                # noqa: E402
 
 output = script.get_output()
-PATH = prosheets_setup.profile_path()
+PATH = sheetpilot_setup.profile_path()
 
 
 def main():
     if not os.path.isfile(PATH):
         forms.alert("Zatial nie je ulozeny ziadny profil. Spusti najprv "
-                    "'Export vykresov'.", title="ProSheets Lite")
+                    "'Export vykresov'.", title="SheetPilot")
         return
     try:
-        config = ps_config.load(PATH)
+        config = sp_config.load(PATH)
     except Exception as exc:
-        forms.alert(u"Profil sa neda pouzit:\n%s" % exc, title="ProSheets Lite")
+        forms.alert(u"Profil sa neda pouzit:\n%s" % exc, title="SheetPilot")
         return
 
     selection = config["sheet_selection"]
@@ -35,7 +35,7 @@ def main():
                   config["output_folder"], selection["mode"]))
     if selection["mode"] == "numbers":
         summary += u" (%d vykresov)" % len(selection["numbers"])
-    if not forms.alert(summary + "\n\nSpustit export?", title="ProSheets Lite",
+    if not forms.alert(summary + "\n\nSpustit export?", title="SheetPilot",
                        yes=True, no=True):
         return
 
@@ -51,11 +51,11 @@ def main():
         report = runner.run(revit.doc, config, progress)
 
     log_path = report.write_csv(config["output_folder"])
-    output.print_md("### ProSheets Lite - opakovany export")
+    output.print_md("### SheetPilot - opakovany export")
     for line in report.lines():
         output.print_md("    " + line)
     output.print_md("Log davky: `%s`" % log_path)
-    forms.alert(report.summary(), title="ProSheets Lite")
+    forms.alert(report.summary(), title="SheetPilot")
 
 
 main()

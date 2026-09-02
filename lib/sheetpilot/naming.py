@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Skladanie nazvov suborov zo sablony s tokenmi.
 
-Sablona sa pise podobne ako v ProSheets, napr.:
+Sablona sa pise podobne ako v DiRoots ProSheets, napr.:
 
     {Sheet Number} - {Sheet Name}
     {Project Number}_{Sheet Number}_R{Current Revision|00}

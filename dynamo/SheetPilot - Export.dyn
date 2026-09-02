@@ -1,8 +1,8 @@
 {
-  "Uuid": "9ae65a50-2fcf-5291-aa3d-2902163f02c6",
+  "Uuid": "1e5a0883-d337-5ba5-83c5-36054cfea385",
   "IsCustomNode": false,
   "Description": "Davkovy export Revit vykresov do PDF a DWG.",
-  "Name": "ProSheets Lite - Export",
+  "Name": "SheetPilot - Export",
   "ElementResolver": {
     "ResolutionMap": {}
   },
@@ -47,9 +47,9 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Adresar s balikom prosheets",
-      "InputValue": "C:\\ProSheetsLite\\lib",
-      "NodeValue": "C:\\ProSheetsLite\\lib"
+      "Description": "Adresar s balikom sheetpilot",
+      "InputValue": "C:\\SheetPilot\\lib",
+      "NodeValue": "C:\\SheetPilot\\lib"
     },
     {
       "Id": "33497e43aed75e7d8da6d4c3eaa6a2dd",
@@ -265,8 +265,8 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Python skript ProSheets Lite",
-      "Code": "# -*- coding: utf-8 -*-\n\"\"\"ProSheets Lite - Dynamo Python node pre davkovy export vykresov.\n\nVstupy:\n  IN[0]  Run              bool    - export sa spusti az pri True\n  IN[1]  LibPath          string  - adresar s balikom `prosheets` (napr. C:\\\\ProSheetsLite\\\\lib)\n  IN[2]  Sheets           list    - konkretne vykresy z Dynama; prazdne = podla Selection\n  IN[3]  OutputFolder     string  - vystupny adresar\n  IN[4]  Formats          list    - napr. [\"PDF\", \"DWG\"]\n  IN[5]  FileNameTemplate string  - napr. \"{Sheet Number} - {Sheet Name}\"\n  IN[6]  CombinePDF       bool    - vsetky vykresy do jedneho PDF\n  IN[7]  DWGExportSetup   string  - nazov ulozeneho DWG Export Setupu (\"\" = predvolby)\n\nVystup: zoznam riadkov s vysledkom pre kazdy vykres + suhrn.\n\"\"\"\n\nimport os\nimport sys\nimport traceback\n\nimport clr\nclr.AddReference(\"RevitServices\")\nfrom RevitServices.Persistence import DocumentManager\nfrom RevitServices.Transactions import TransactionManager\n\n\ndef _input(index, default=None):\n    try:\n        value = IN[index]            # noqa: F821 - IN dodava Dynamo\n    except (IndexError, NameError):\n        return default\n    return default if value is None else value\n\n\ndef _as_list(value):\n    if value is None:\n        return []\n    if isinstance(value, (list, tuple)):\n        return [v for v in value if v not in (None, \"\")]\n    return [value]\n\n\ndef main():\n    if not _input(0, False):\n        return [\"Prepni Run na True a export sa spusti.\"]\n\n    lib_path = _input(1, \"\")\n    if lib_path and lib_path not in sys.path:\n        sys.path.append(lib_path)\n    try:\n        from prosheets import runner\n    except ImportError:\n        return [\"Balik 'prosheets' sa nenasiel. Do vstupu LibPath zadaj adresar, \"\n                \"ktory obsahuje priecinok 'prosheets' (v repozitari je to 'lib').\",\n                \"Aktualna hodnota LibPath: %r\" % lib_path]\n\n    doc = DocumentManager.Instance.CurrentDBDocument\n    # Export sa nesmie diat v otvorenej transakcii, ktoru Dynamo drzi.\n    TransactionManager.Instance.ForceCloseTransaction()\n\n    selected = _as_list(_input(2))\n    sheet_numbers = []\n    for item in selected:\n        sheet = UnwrapElement(item)  # noqa: F821 - UnwrapElement dodava Dynamo\n        if sheet is not None:\n            sheet_numbers.append(sheet.SheetNumber)\n\n    config = {\n        \"output_folder\": _input(3, \"\"),\n        \"formats\": _as_list(_input(4, [\"PDF\"])) or [\"PDF\"],\n        \"file_name_template\": _input(5, \"{Sheet Number} - {Sheet Name}\"),\n        \"pdf\": {\"combine\": bool(_input(6, False))},\n        \"dwg\": {\"export_setup\": _input(7, \"\") or \"\"},\n        \"sheet_selection\": ({\"mode\": \"numbers\", \"numbers\": sheet_numbers}\n                            if sheet_numbers else {\"mode\": \"all\"}),\n    }\n\n    report = runner.run(doc, config)\n    log = report.write_csv(config[\"output_folder\"])\n    return report.lines() + [\"Log davky: %s\" % log]\n\n\ntry:\n    OUT = main()\nexcept Exception:\n    OUT = [\"Export zlyhal:\"] + traceback.format_exc().splitlines()\n",
+      "Description": "Python skript SheetPilot",
+      "Code": "# -*- coding: utf-8 -*-\n\"\"\"SheetPilot - Dynamo Python node pre davkovy export vykresov.\n\nVstupy:\n  IN[0]  Run              bool    - export sa spusti az pri True\n  IN[1]  LibPath          string  - adresar s balikom `sheetpilot` (napr. C:\\\\SheetPilot\\\\lib)\n  IN[2]  Sheets           list    - konkretne vykresy z Dynama; prazdne = podla Selection\n  IN[3]  OutputFolder     string  - vystupny adresar\n  IN[4]  Formats          list    - napr. [\"PDF\", \"DWG\"]\n  IN[5]  FileNameTemplate string  - napr. \"{Sheet Number} - {Sheet Name}\"\n  IN[6]  CombinePDF       bool    - vsetky vykresy do jedneho PDF\n  IN[7]  DWGExportSetup   string  - nazov ulozeneho DWG Export Setupu (\"\" = predvolby)\n\nVystup: zoznam riadkov s vysledkom pre kazdy vykres + suhrn.\n\"\"\"\n\nimport os\nimport sys\nimport traceback\n\nimport clr\nclr.AddReference(\"RevitServices\")\nfrom RevitServices.Persistence import DocumentManager\nfrom RevitServices.Transactions import TransactionManager\n\n\ndef _input(index, default=None):\n    try:\n        value = IN[index]            # noqa: F821 - IN dodava Dynamo\n    except (IndexError, NameError):\n        return default\n    return default if value is None else value\n\n\ndef _as_list(value):\n    if value is None:\n        return []\n    if isinstance(value, (list, tuple)):\n        return [v for v in value if v not in (None, \"\")]\n    return [value]\n\n\ndef main():\n    if not _input(0, False):\n        return [\"Prepni Run na True a export sa spusti.\"]\n\n    lib_path = _input(1, \"\")\n    if lib_path and lib_path not in sys.path:\n        sys.path.append(lib_path)\n    try:\n        from sheetpilot import runner\n    except ImportError:\n        return [\"Balik 'sheetpilot' sa nenasiel. Do vstupu LibPath zadaj adresar, \"\n                \"ktory obsahuje priecinok 'sheetpilot' (v repozitari je to 'lib').\",\n                \"Aktualna hodnota LibPath: %r\" % lib_path]\n\n    doc = DocumentManager.Instance.CurrentDBDocument\n    # Export sa nesmie diat v otvorenej transakcii, ktoru Dynamo drzi.\n    TransactionManager.Instance.ForceCloseTransaction()\n\n    selected = _as_list(_input(2))\n    sheet_numbers = []\n    for item in selected:\n        sheet = UnwrapElement(item)  # noqa: F821 - UnwrapElement dodava Dynamo\n        if sheet is not None:\n            sheet_numbers.append(sheet.SheetNumber)\n\n    config = {\n        \"output_folder\": _input(3, \"\"),\n        \"formats\": _as_list(_input(4, [\"PDF\"])) or [\"PDF\"],\n        \"file_name_template\": _input(5, \"{Sheet Number} - {Sheet Name}\"),\n        \"pdf\": {\"combine\": bool(_input(6, False))},\n        \"dwg\": {\"export_setup\": _input(7, \"\") or \"\"},\n        \"sheet_selection\": ({\"mode\": \"numbers\", \"numbers\": sheet_numbers}\n                            if sheet_numbers else {\"mode\": \"all\"}),\n    }\n\n    report = runner.run(doc, config)\n    log = report.write_csv(config[\"output_folder\"])\n    return report.lines() + [\"Log davky: %s\" % log]\n\n\ntry:\n    OUT = main()\nexcept Exception:\n    OUT = [\"Export zlyhal:\"] + traceback.format_exc().splitlines()\n",
       "Engine": "CPython3",
       "EngineName": "CPython3",
       "VariableInputPorts": true
@@ -361,7 +361,7 @@
   ],
   "Dependencies": [],
   "NodeLibraryDependencies": [],
-  "Author": "ProSheets Lite",
+  "Author": "SheetPilot",
   "Bindings": [],
   "View": {
     "Dynamo": {
@@ -468,7 +468,7 @@
       },
       {
         "Id": "879147ffaca950b7a95c324bf1df2a56",
-        "Name": "ProSheets Lite - Export",
+        "Name": "SheetPilot - Export",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,

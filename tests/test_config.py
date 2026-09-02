@@ -4,7 +4,7 @@ import shutil
 import tempfile
 import unittest
 
-from prosheets import config
+from sheetpilot import config
 
 
 class NormalizeTest(unittest.TestCase):

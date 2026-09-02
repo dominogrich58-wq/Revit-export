@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-"""Overovaci skript - ziadna zavislost na ProSheets Lite.
+"""Overovaci skript - ziadna zavislost na SheetPilot.
 
 Sluzi len na zistenie, ci pyRevit v danom Revite vobec dokaze postavit
 vlastnu zalozku a spustit skript. Ak sa toto tlacidlo objavi a funguje,
-problem je v balicku ProSheetsLite; ak sa neobjavi, problem je v pyRevite
+problem je v balicku SheetPilot; ak sa neobjavi, problem je v pyRevite
 alebo v nastaveni Custom Extension Directories.
 
 Priecinok PyRevitTest.extension sa da po overeni pokojne zmazat.

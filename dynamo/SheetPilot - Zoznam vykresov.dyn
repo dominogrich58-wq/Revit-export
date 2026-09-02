@@ -1,8 +1,8 @@
 {
-  "Uuid": "08efec99-df8d-5d54-bf9d-59f228251388",
+  "Uuid": "e21b1bd7-ba01-5f3a-bf9c-802ee6de8f6e",
   "IsCustomNode": false,
   "Description": "Vypise vykresy, Sheet Sety a DWG Export Setupy v modeli.",
-  "Name": "ProSheets Lite - Zoznam vykresov",
+  "Name": "SheetPilot - Zoznam vykresov",
   "ElementResolver": {
     "ResolutionMap": {}
   },
@@ -26,9 +26,9 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Adresar s balikom prosheets",
-      "InputValue": "C:\\ProSheetsLite\\lib",
-      "NodeValue": "C:\\ProSheetsLite\\lib"
+      "Description": "Adresar s balikom sheetpilot",
+      "InputValue": "C:\\SheetPilot\\lib",
+      "NodeValue": "C:\\SheetPilot\\lib"
     },
     {
       "Id": "9723f168f8145a65a3098d6647a5e8a1",
@@ -87,8 +87,8 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Python skript ProSheets Lite",
-      "Code": "# -*- coding: utf-8 -*-\n\"\"\"ProSheets Lite - pomocny node: zoznam vykresov, Sheet Setov a DWG setupov.\n\nVstupy:\n  IN[0] LibPath  string - adresar s balikom `prosheets`\n  IN[1] SheetSet string - ak je vyplneny, vrati len vykresy z tohto Sheet Setu\n\nVystup: [zoznam vykresov, nazvy Sheet Setov, nazvy DWG Export Setupov]\n\"\"\"\n\nimport sys\nimport traceback\n\nimport clr\nclr.AddReference(\"RevitServices\")\nfrom RevitServices.Persistence import DocumentManager\n\n\ndef main():\n    lib_path = IN[0] if len(IN) > 0 and IN[0] else \"\"   # noqa: F821\n    if lib_path and lib_path not in sys.path:\n        sys.path.append(lib_path)\n    from prosheets import sheets as sheets_mod\n    from prosheets.exporters import dwg as dwg_exporter\n\n    doc = DocumentManager.Instance.CurrentDBDocument\n    set_name = IN[1] if len(IN) > 1 and IN[1] else \"\"   # noqa: F821\n\n    found = (sheets_mod.sheets_from_set(doc, set_name) if set_name\n             else sheets_mod.all_sheets(doc))\n    return [found,\n            sheets_mod.sheet_sets(doc),\n            dwg_exporter.export_setups(doc)]\n\n\ntry:\n    OUT = main()\nexcept Exception:\n    OUT = traceback.format_exc().splitlines()\n",
+      "Description": "Python skript SheetPilot",
+      "Code": "# -*- coding: utf-8 -*-\n\"\"\"SheetPilot - pomocny node: zoznam vykresov, Sheet Setov a DWG setupov.\n\nVstupy:\n  IN[0] LibPath  string - adresar s balikom `sheetpilot`\n  IN[1] SheetSet string - ak je vyplneny, vrati len vykresy z tohto Sheet Setu\n\nVystup: [zoznam vykresov, nazvy Sheet Setov, nazvy DWG Export Setupov]\n\"\"\"\n\nimport sys\nimport traceback\n\nimport clr\nclr.AddReference(\"RevitServices\")\nfrom RevitServices.Persistence import DocumentManager\n\n\ndef main():\n    lib_path = IN[0] if len(IN) > 0 and IN[0] else \"\"   # noqa: F821\n    if lib_path and lib_path not in sys.path:\n        sys.path.append(lib_path)\n    from sheetpilot import sheets as sheets_mod\n    from sheetpilot.exporters import dwg as dwg_exporter\n\n    doc = DocumentManager.Instance.CurrentDBDocument\n    set_name = IN[1] if len(IN) > 1 and IN[1] else \"\"   # noqa: F821\n\n    found = (sheets_mod.sheets_from_set(doc, set_name) if set_name\n             else sheets_mod.all_sheets(doc))\n    return [found,\n            sheets_mod.sheet_sets(doc),\n            dwg_exporter.export_setups(doc)]\n\n\ntry:\n    OUT = main()\nexcept Exception:\n    OUT = traceback.format_exc().splitlines()\n",
       "Engine": "CPython3",
       "EngineName": "CPython3",
       "VariableInputPorts": true
@@ -147,7 +147,7 @@
   ],
   "Dependencies": [],
   "NodeLibraryDependencies": [],
-  "Author": "ProSheets Lite",
+  "Author": "SheetPilot",
   "Bindings": [],
   "View": {
     "Dynamo": {
@@ -194,7 +194,7 @@
       },
       {
         "Id": "d1f8120d831055af9d665a7f1e2e9b50",
-        "Name": "ProSheets Lite - Zoznam vykresov",
+        "Name": "SheetPilot - Zoznam vykresov",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,

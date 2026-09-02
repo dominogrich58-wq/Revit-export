@@ -4,8 +4,8 @@ import shutil
 import tempfile
 import unittest
 
-from prosheets import runner
-from prosheets.config import normalize
+from sheetpilot import runner
+from sheetpilot.config import normalize
 
 from fakes import FakeDocument, FakeSheet
 

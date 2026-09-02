@@ -81,7 +81,7 @@ class Report(object):
         """Ulozi log davky ako CSV (oddelovac ';', UTF-8 s BOM kvoli Excelu)."""
         if not os.path.isdir(folder):
             os.makedirs(folder)
-        name = file_name or time.strftime("ProSheets-log-%Y%m%d-%H%M%S.csv")
+        name = file_name or time.strftime("SheetPilot-log-%Y%m%d-%H%M%S.csv")
         path = os.path.join(folder, name)
         with io.open(path, "w", encoding="utf-8-sig", newline="") as handle:
             handle.write(u";".join(self.HEADER) + u"\r\n")
