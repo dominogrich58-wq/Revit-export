@@ -17,6 +17,7 @@
     --warn: #a8621b;
     --danger: #b3261e;
     --shadow: 0 18px 44px rgba(20, 32, 42, .18);
+    --backdrop: rgba(20, 32, 42, .42);
     --ui: "Archivo", "Segoe UI", system-ui, sans-serif;
     --mono: "IBM Plex Mono", "Consolas", monospace;
   }
@@ -38,6 +39,7 @@
       --warn: #d29349;
       --danger: #e08076;
       --shadow: 0 18px 44px rgba(0, 0, 0, .5);
+      --backdrop: rgba(0, 0, 0, .58);
     }
   }
 
@@ -57,6 +59,7 @@
     --warn: #d29349;
     --danger: #e08076;
     --shadow: 0 18px 44px rgba(0, 0, 0, .5);
+    --backdrop: rgba(0, 0, 0, .58);
   }
 
   * { box-sizing: border-box; }
@@ -71,9 +74,8 @@
     padding: 28px 20px 64px;
   }
 
-  .page { max-width: 1160px; margin: 0 auto; display: flex; flex-direction: column; gap: 22px; }
+  .page { max-width: 1180px; margin: 0 auto; display: flex; flex-direction: column; gap: 22px; }
 
-  /* --- hlavicka nahladu --- */
   .intro { display: flex; flex-wrap: wrap; gap: 14px 28px; align-items: flex-end; justify-content: space-between; }
   .intro h1 { font-size: 21px; font-weight: 700; margin: 0; letter-spacing: -.01em; }
   .intro p { margin: 4px 0 0; color: var(--muted); max-width: 62ch; }
@@ -90,7 +92,7 @@
   }
   .titlebar {
     display: flex; align-items: center; gap: 10px;
-    padding: 10px 14px; background: var(--surface-3); border-bottom: 1px solid var(--line);
+    padding: 9px 14px; background: var(--surface-3); border-bottom: 1px solid var(--line);
   }
   .titlebar .mark {
     width: 18px; height: 18px; border-radius: 3px; background: var(--accent);
@@ -99,21 +101,29 @@
   }
   .titlebar .name { font-weight: 600; }
   .titlebar .model { color: var(--muted); font-family: var(--mono); font-size: 12px; }
-  .titlebar .close { margin-left: auto; color: var(--muted); font-size: 16px; line-height: 1; }
+  .titlebar .chrome { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+  .titlebar .close { color: var(--muted); font-size: 15px; line-height: 1; }
+
+  .swatches { display: flex; gap: 4px; }
+  .swatch {
+    width: 15px; height: 15px; border-radius: 50%; border: 1px solid rgba(0, 0, 0, .18);
+    padding: 0; cursor: pointer;
+  }
+  .swatch[aria-pressed="true"] { box-shadow: 0 0 0 2px var(--surface-3), 0 0 0 3px var(--ink); }
+  .themebtn { font-size: 12px; padding: 2px 8px; }
 
   .profilebar {
     display: flex; flex-wrap: wrap; align-items: center; gap: 8px;
     padding: 10px 14px; border-bottom: 1px solid var(--line-soft); background: var(--surface-2);
   }
-  .profilebar .lbl { font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+  .lbl { font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
   .profilebar .spacer { flex: 1; }
 
-  .body-grid { display: grid; grid-template-columns: 330px 1fr; }
-  @media (max-width: 900px) { .body-grid { grid-template-columns: 1fr; } }
+  .body-grid { display: grid; grid-template-columns: 372px 1fr; }
+  @media (max-width: 940px) { .body-grid { grid-template-columns: 1fr; } }
 
-  .col-sheets { border-right: 1px solid var(--line-soft); display: flex; flex-direction: column; }
-  @media (max-width: 900px) { .col-sheets { border-right: 0; border-bottom: 1px solid var(--line-soft); } }
-  .col-settings { display: flex; flex-direction: column; }
+  .col-sheets { border-right: 1px solid var(--line-soft); }
+  @media (max-width: 940px) { .col-sheets { border-right: 0; border-bottom: 1px solid var(--line-soft); } }
 
   section.block { padding: 14px; display: flex; flex-direction: column; gap: 10px; }
   section.block + section.block { border-top: 1px solid var(--line-soft); }
@@ -123,33 +133,40 @@
     color: var(--muted); display: flex; align-items: baseline; gap: 8px;
   }
   .eyebrow .count { font-family: var(--mono); letter-spacing: 0; color: var(--accent); }
+  .eyebrow .right { margin-left: auto; }
 
   /* --- zoznam vykresov --- */
   .sheetlist {
     border: 1px solid var(--line); border-radius: 4px; background: var(--surface-2);
-    max-height: 268px; overflow-y: auto;
+    max-height: 292px; overflow-y: auto;
   }
-  .sheetrow {
-    display: grid; grid-template-columns: 18px 46px 1fr auto; align-items: center; gap: 8px;
-    padding: 5px 9px; cursor: pointer; border-bottom: 1px solid var(--line-soft);
+  .sheethead, .sheetrow {
+    display: grid; grid-template-columns: 18px 44px 1fr 34px 30px; align-items: center; gap: 8px;
+    padding: 5px 9px;
   }
+  .sheethead {
+    position: sticky; top: 0; background: var(--surface-3); border-bottom: 1px solid var(--line);
+    font-size: 10px; font-weight: 600; letter-spacing: .07em; text-transform: uppercase; color: var(--muted);
+  }
+  .sheetrow { cursor: pointer; border-bottom: 1px solid var(--line-soft); }
   .sheetrow:last-child { border-bottom: 0; }
   .sheetrow:hover { background: var(--surface-3); }
   .sheetrow .num { font-family: var(--mono); font-size: 12px; font-weight: 500; }
   .sheetrow .nm { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .sheetrow .rev {
-    font-family: var(--mono); font-size: 10px; color: var(--muted);
-    border: 1px solid var(--line); border-radius: 2px; padding: 0 4px;
+  .paper {
+    font-family: var(--mono); font-size: 10px; font-weight: 600; text-align: center;
+    border-radius: 2px; padding: 1px 0; color: var(--accent); background: var(--accent-soft);
   }
+  .rev { font-family: var(--mono); font-size: 10px; color: var(--muted); text-align: center; }
   .rowbtns { display: flex; gap: 6px; flex-wrap: wrap; }
 
-  /* --- ovladacie prvky --- */
+  /* --- prvky --- */
   input[type="text"], select {
     font-family: var(--ui); font-size: 13px; color: var(--ink);
     background: var(--surface); border: 1px solid var(--line); border-radius: 3px;
     padding: 5px 7px; min-width: 0;
   }
-  input[type="text"].mono { font-family: var(--mono); font-size: 12px; }
+  input.mono { font-family: var(--mono); font-size: 12px; }
   input[type="checkbox"] { accent-color: var(--accent); width: 15px; height: 15px; margin: 0; }
   :focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
 
@@ -169,6 +186,7 @@
 
   label.check { display: flex; align-items: center; gap: 7px; cursor: pointer; }
   .fields { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; }
+  .dim { color: var(--muted); }
 
   .formats { display: flex; gap: 18px; }
   .formats label.check { font-weight: 600; }
@@ -178,17 +196,21 @@
   }
   .subopts[hidden] { display: none; }
 
-  /* --- skladacka nazvu --- */
-  table.builder { width: 100%; border-collapse: collapse; font-size: 13px; }
-  table.builder th {
-    text-align: left; font-size: 10px; font-weight: 600; letter-spacing: .08em;
-    text-transform: uppercase; color: var(--muted); padding: 0 6px 5px; font-weight: 600;
+  /* --- nazov: pas so ziletkami --- */
+  .chips {
+    display: flex; flex-wrap: wrap; gap: 5px; align-items: center;
+    border: 1px solid var(--line); border-radius: 4px; background: var(--surface-2);
+    padding: 7px 8px; min-height: 38px;
   }
-  table.builder td { padding: 3px 6px 3px 0; vertical-align: middle; }
-  table.builder td:first-child { padding-left: 0; }
-  table.builder select { width: 100%; }
-  table.builder input { width: 100%; }
-  .col-p { width: 40%; } .col-f { width: 22%; } .col-a { width: 96px; }
+  .chip {
+    display: inline-flex; align-items: baseline; gap: 3px;
+    border: 1px solid var(--line); border-radius: 3px; background: var(--surface);
+    padding: 2px 7px; font-size: 12px; white-space: nowrap;
+  }
+  .chip .lit { font-family: var(--mono); color: var(--muted); }
+  .chip .par { font-weight: 500; }
+  .chip.text { border-style: dashed; }
+  .chips .empty { color: var(--muted); font-size: 12px; }
 
   .preview {
     background: var(--surface-2); border: 1px solid var(--line); border-left: 3px solid var(--accent);
@@ -197,7 +219,7 @@
   .preview .k { font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
   .preview .v { font-family: var(--mono); font-size: 13px; font-weight: 500; word-break: break-all; }
 
-  /* --- pata okna --- */
+  /* --- pata --- */
   .footer {
     border-top: 1px solid var(--line); background: var(--surface-2);
     padding: 12px 14px; display: flex; flex-direction: column; gap: 10px;
@@ -207,12 +229,12 @@
   .actions { display: flex; align-items: center; gap: 10px; }
   .actions .status { color: var(--muted); font-size: 12px; margin-right: auto; }
 
-  /* --- vysledok --- */
   .result { border-top: 1px solid var(--line); padding: 14px; display: flex; flex-direction: column; gap: 9px; }
   .result[hidden] { display: none; }
-  .result ol { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 2px; }
+  .result ol { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 2px;
+               max-height: 220px; overflow-y: auto; }
   .result li {
-    display: grid; grid-template-columns: 62px 1fr; gap: 10px; align-items: baseline;
+    display: grid; grid-template-columns: 54px 1fr; gap: 10px; align-items: baseline;
     font-family: var(--mono); font-size: 12px; padding: 2px 0;
   }
   .result .tag { font-weight: 600; font-size: 10px; letter-spacing: .05em; }
@@ -221,7 +243,36 @@
   .note-ok { color: var(--ok); font-weight: 500; }
   .note-warn { color: var(--warn); font-weight: 500; }
 
-  /* --- poznamky pod oknom --- */
+  /* --- modalne okno nazvu --- */
+  .backdrop {
+    position: fixed; inset: 0; background: var(--backdrop);
+    display: grid; place-items: center; padding: 24px; z-index: 20;
+  }
+  .backdrop[hidden] { display: none; }
+  .dialog {
+    background: var(--surface); border: 1px solid var(--line); border-radius: 6px;
+    box-shadow: var(--shadow); width: min(820px, 100%); max-height: 100%;
+    display: flex; flex-direction: column; overflow: hidden;
+  }
+  .dialog .titlebar { background: var(--surface-3); }
+  .dialog .dbody { padding: 16px; display: flex; flex-direction: column; gap: 12px; overflow-y: auto; }
+  .dialog .dfoot {
+    border-top: 1px solid var(--line); background: var(--surface-2); padding: 12px 16px;
+    display: flex; gap: 10px; align-items: center;
+  }
+  .dialog .dfoot .spacer { flex: 1; }
+
+  table.builder { width: 100%; border-collapse: collapse; font-size: 13px; }
+  table.builder th {
+    text-align: left; font-size: 10px; font-weight: 600; letter-spacing: .07em;
+    text-transform: uppercase; color: var(--muted); padding: 0 6px 5px 0;
+  }
+  table.builder td { padding: 3px 6px 3px 0; vertical-align: middle; }
+  table.builder select, table.builder input { width: 100%; }
+  .c-par { width: 27%; } .c-lit { width: 13%; } .c-fb { width: 13%; } .c-mod { width: 15%; } .c-act { width: 92px; }
+  table.builder tr.drop td { padding-top: 0; }
+
+  /* --- poznamky --- */
   .review { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 20px 22px; }
   .review h2 { font-size: 15px; margin: 0 0 4px; }
   .review > p { margin: 0 0 16px; color: var(--muted); max-width: 68ch; }
@@ -234,6 +285,7 @@
   .review .q { font-weight: 600; }
   .review .a { color: var(--muted); max-width: 66ch; }
   .review .a code { font-family: var(--mono); font-size: 12px; background: var(--surface-2); padding: 1px 4px; border-radius: 2px; }
+  .review .done { color: var(--ok); font-weight: 600; font-size: 11px; letter-spacing: .06em; text-transform: uppercase; }
 
   @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
 </style>
@@ -243,8 +295,8 @@
   <div class="intro">
     <div>
       <h1>SheetPilot — návrh jedného okna</h1>
-      <p>Klikací náhľad rozhrania, ktoré nahradí sled vyskakovacích dialógov. Všetko sa
-         nastavuje na jednom mieste, ukážka názvu sa prekresľuje pri každej zmene.</p>
+      <p>Klikací náhľad rozhrania, ktoré nahradí sled vyskakovacích dialógov. Skladačka
+         názvu je teraz pás žiletiek s detailným nastavením v samostatnom okne.</p>
     </div>
     <span class="mock-flag">Náhľad — nie je pripojený na Revit</span>
   </div>
@@ -254,7 +306,12 @@
       <span class="mark">SP</span>
       <span class="name">SheetPilot — export výkresov</span>
       <span class="model">BD_Vajnorska_R26.rvt</span>
-      <span class="close">✕</span>
+      <span class="chrome">
+        <span class="lbl">Vzhľad</span>
+        <span class="swatches" id="swatches"></span>
+        <button type="button" class="themebtn" id="themebtn">Systém</button>
+        <span class="close">✕</span>
+      </span>
     </div>
 
     <div class="profilebar">
@@ -276,19 +333,22 @@
 
       <div class="col-sheets">
         <section class="block">
-          <div class="eyebrow">Výkresy <span class="count" id="sheetcount">4 z 9</span></div>
+          <div class="eyebrow">Výkresy <span class="count" id="sheetcount"></span></div>
+          <input type="text" id="filter" placeholder="filtrovať podľa čísla alebo názvu…">
           <div class="fields">
-            <input type="text" id="filter" placeholder="filtrovať podľa čísla alebo názvu…" style="flex:1">
-          </div>
-          <div class="fields">
-            <span class="lbl" style="font-size:12px;color:var(--muted)">Sheet Set</span>
+            <span class="dim" style="font-size:12px">Sheet Set</span>
             <select id="sheetset" style="flex:1">
               <option value="">— všetky výkresy —</option>
               <option value="dsp">DSP - odovzdanie</option>
               <option value="arch">Architektúra</option>
             </select>
           </div>
-          <div class="sheetlist" id="sheetlist"></div>
+          <div class="sheetlist">
+            <div class="sheethead">
+              <span></span><span>Číslo</span><span>Názov výkresu</span><span>Papier</span><span>Rev</span>
+            </div>
+            <div id="sheetrows"></div>
+          </div>
           <div class="rowbtns">
             <button type="button" data-sel="all">Všetko</button>
             <button type="button" data-sel="none">Nič</button>
@@ -298,8 +358,7 @@
         </section>
       </div>
 
-      <div class="col-settings">
-
+      <div>
         <section class="block">
           <div class="eyebrow">Formáty</div>
           <div class="formats">
@@ -309,66 +368,37 @@
           <div class="subopts" id="pdf-opts">
             <label class="check"><input type="checkbox" id="pdf-combine"> Spojiť všetky výkresy do jedného PDF</label>
             <div class="fields">
-              <span style="color:var(--muted)">Kvalita rastra</span>
-              <select id="pdf-quality">
-                <option>High</option><option>Presentation</option>
-                <option>Medium</option><option>Low</option>
-              </select>
-              <span style="color:var(--muted)">Farby</span>
+              <span class="dim">Kvalita rastra</span>
+              <select id="pdf-quality"><option>High</option><option>Presentation</option><option>Medium</option><option>Low</option></select>
+              <span class="dim">Farby</span>
               <select id="pdf-color"><option>Color</option><option>GrayScale</option><option>BlackLine</option></select>
             </div>
           </div>
           <div class="subopts" id="dwg-opts">
             <label class="check"><input type="checkbox" id="dwg-noxref" checked> Jeden DWG na výkres, bez externých referencií</label>
             <div class="fields">
-              <span style="color:var(--muted)">Export Setup</span>
-              <select id="dwg-setup">
-                <option>— predvoľby Revitu —</option>
-                <option>Odovzdanie DSP</option>
-                <option>Statika</option>
-              </select>
-              <span style="color:var(--muted)">Verzia</span>
+              <span class="dim">Export Setup</span>
+              <select id="dwg-setup"><option>— predvoľby Revitu —</option><option>Odovzdanie DSP</option><option>Statika</option></select>
+              <span class="dim">Verzia</span>
               <select id="dwg-ver"><option>AutoCAD 2018</option><option>AutoCAD 2013</option><option>AutoCAD 2007</option></select>
             </div>
           </div>
         </section>
 
         <section class="block">
-          <div class="eyebrow">Názov súboru</div>
-          <table class="builder">
-            <thead>
-              <tr>
-                <th class="col-p">Parameter</th>
-                <th class="col-f">Pred</th>
-                <th class="col-f">Za</th>
-                <th class="col-a"></th>
-              </tr>
-            </thead>
-            <tbody id="rows"></tbody>
-          </table>
-          <div class="fields">
-            <select id="addparam">
-              <option value="">+ pridať parameter…</option>
-            </select>
-            <span style="color:var(--muted)">Pred všetkým</span>
-            <input type="text" class="mono" id="gprefix" size="8" value="">
-            <span style="color:var(--muted)">Za všetkým</span>
-            <input type="text" class="mono" id="gsuffix" size="8" value="">
+          <div class="eyebrow">
+            Názov súboru
+            <span class="right"><button type="button" id="editname">Upraviť názov…</button></span>
           </div>
-          <div class="preview">
-            <span class="k">Šablóna</span><span class="v" id="tpl"></span>
-          </div>
-          <div class="preview">
-            <span class="k">Ukážka</span><span class="v" id="prev"></span>
-          </div>
+          <div class="chips" id="chips"></div>
+          <div class="preview"><span class="k">Ukážka</span><span class="v" id="prev"></span></div>
         </section>
-
       </div>
     </div>
 
     <div class="footer">
       <div class="pathrow">
-        <span class="lbl" style="font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)">Výstup</span>
+        <span class="lbl">Výstup</span>
         <input type="text" class="mono" id="outdir" value="C:\Export\2026-018 DSP">
         <button type="button">Prehľadávať…</button>
       </div>
@@ -393,36 +423,44 @@
 
   <div class="review">
     <h2>Na čom sa potrebujeme dohodnúť</h2>
-    <p>Preklikaj si okno a napíš mi číslo otázky a svoju odpoveď — napríklad „Q3: áno, ale
-       daj to vpravo hore". Rovnako pošli hocičo, čo ti tu chýba alebo prekáža.</p>
+    <p>Napíš mi číslo otázky a odpoveď — napríklad „Q3: áno, ale daj to vpravo hore".
+       Rovnako pošli hocičo, čo ti tu chýba alebo prekáža.</p>
     <ol>
       <li>
         <div>
           <div class="q">Je rozdelenie na dva stĺpce správne?</div>
           <div class="a">Vľavo výkresy, vpravo nastavenia. Alternatíva je výkresy dole cez celú
-            šírku, čo dá zoznamu viac miesta, ale okno bude vyššie.</div>
+            šírku — zoznam dostane viac miesta, okno bude vyššie.</div>
         </div>
       </li>
       <li>
         <div>
-          <div class="q">Stačia v zozname výkresov stĺpce číslo, názov, revízia?</div>
-          <div class="a">Vieme pridať dátum vydania, fázu, mierku alebo hocijaký parameter — ale
-            každý stĺpec uberá miesto názvu.</div>
+          <div class="q">Sedia stĺpce v zozname výkresov? <span class="done">papier doplnený</span></div>
+          <div class="a">Teraz číslo, názov, papier, revízia. Vieme pridať dátum vydania, fázu
+            alebo mierku — každý ďalší stĺpec však uberá miesto názvu.</div>
         </div>
       </li>
       <li>
         <div>
-          <div class="q">Skladačka názvu ako tabuľka — sedí?</div>
-          <div class="a">Každý riadok je jedna časť názvu. Chýba tam ešte náhradná hodnota
-            (napr. <code>00</code> pri prázdnej revízii) a úprava veľkosti písmen — dal by som ich
-            ako dva ďalšie úzke stĺpce, alebo skryl pod tlačidlo <code>…</code> na riadku.</div>
+          <div class="q">Funguje pás žiletiek + samostatné okno? <span class="done">prerobené</span></div>
+          <div class="a">Osem častí názvu sa teraz zmestí na dva riadky. Detail sa rieši
+            v okne <em>Upraviť názov</em>, kde je miesto aj na náhradnú hodnotu a veľkosť písmen.
+            Alternatíva: žiletky urobiť klikacie, aby sa dala upraviť jedna bez otvárania okna.</div>
         </div>
       </li>
       <li>
         <div>
-          <div class="q">Má ostať zoznam súborov, ktoré vzniknú?</div>
-          <div class="a">Teraz sa ukáže až po stlačení <em>Exportovať</em>. Môže byť aj stále
-            viditeľný vpravo dole, aby si videl dopad každej zmeny okamžite.</div>
+          <div class="q">Sadli by ti farby? <span class="done">na výber päť</span></div>
+          <div class="a">Vpravo hore v titulku. K tomu svetlý / tmavý / podľa systému.
+            Vo WPF to znamená malú sadu farieb — nie ľubovoľný farebný výber, ale povedz,
+            ak ti tam nejaká chýba.</div>
+        </div>
+      </li>
+      <li>
+        <div>
+          <div class="q">Má byť zoznam vzniknutých súborov stále viditeľný?</div>
+          <div class="a">Teraz sa ukáže až po stlačení <em>Exportovať</em>. Môže byť aj trvalo
+            dole, aby si videl dopad každej zmeny okamžite.</div>
         </div>
       </li>
       <li>
@@ -434,9 +472,9 @@
       </li>
       <li>
         <div>
-          <div class="q">Chýba ti tu niečo z toho, čo ProSheets vie?</div>
-          <div class="a">Napadá ma veľkosť papiera a orientácia, výber revízie, filter podľa
-            parametra výkresu, export do IFC/NWC. Povedz, čo naozaj používaš.</div>
+          <div class="q">Má sa dať filtrovať aj podľa papiera?</div>
+          <div class="a">Keď už je papier v zozname, ponúka sa „vyber všetky A1" jedným klikom.
+            Podobne podľa revízie alebo fázy.</div>
         </div>
       </li>
     </ol>
@@ -444,17 +482,69 @@
 
 </div>
 
+<div class="backdrop" id="backdrop" hidden>
+  <div class="dialog" role="dialog" aria-modal="true" aria-label="Upraviť názov súboru">
+    <div class="titlebar">
+      <span class="mark">SP</span>
+      <span class="name">Názov súboru</span>
+      <span class="chrome"><button type="button" class="icon" id="dclose">✕</button></span>
+    </div>
+    <div class="dbody">
+      <div class="fields">
+        <span class="dim">Začať od hotovej schémy</span>
+        <select id="preset">
+          <option value="">— vyber —</option>
+          <option value="a">{Sheet Number} - {Sheet Name}</option>
+          <option value="b">{Project Number}-{Sheet Number}-{Sheet Name}</option>
+          <option value="c">{yyyymmdd}_{Sheet Number}</option>
+        </select>
+      </div>
+      <table class="builder">
+        <thead>
+          <tr>
+            <th class="c-par">Parameter</th>
+            <th class="c-lit">Pred</th>
+            <th class="c-lit">Za</th>
+            <th class="c-fb">Ak prázdne</th>
+            <th class="c-mod">Písmená</th>
+            <th class="c-act"></th>
+          </tr>
+        </thead>
+        <tbody id="rows"></tbody>
+      </table>
+      <div class="fields">
+        <select id="addparam"><option value="">+ pridať parameter…</option></select>
+        <button type="button" id="addtext">+ pridať text</button>
+        <span class="spacer" style="flex:1"></span>
+        <span class="dim">Pred všetkým</span>
+        <input type="text" class="mono" id="gprefix" size="8">
+        <span class="dim">Za všetkým</span>
+        <input type="text" class="mono" id="gsuffix" size="8">
+      </div>
+      <div class="preview"><span class="k">Šablóna</span><span class="v" id="tpl"></span></div>
+      <div class="preview"><span class="k">Ukážka</span><span class="v" id="dprev"></span></div>
+      <div id="dwarn"></div>
+    </div>
+    <div class="dfoot">
+      <span class="dim" id="dcount"></span>
+      <span class="spacer"></span>
+      <button type="button" id="dcancel">Zrušiť</button>
+      <button type="button" class="primary" id="dok">Použiť</button>
+    </div>
+  </div>
+</div>
+
 <script>
   var SHEETS = [
-    { num: "101", name: "Situácia",          rev: "",   set: ["dsp"],         faza: "DSP" },
-    { num: "201", name: "Pôdorys 1.NP",      rev: "01", set: ["dsp","arch"],  faza: "DSP" },
-    { num: "202", name: "Pôdorys 2.NP",      rev: "01", set: ["dsp","arch"],  faza: "DSP" },
-    { num: "203", name: "Pôdorys strechy",   rev: "",   set: ["arch"],        faza: "DSP" },
-    { num: "301", name: "Rez A-A",           rev: "02", set: ["dsp","arch"],  faza: "DSP" },
-    { num: "302", name: "Rez B-B",           rev: "",   set: ["arch"],        faza: "DSP" },
-    { num: "401", name: "Pohľad juh",        rev: "01", set: ["arch"],        faza: "DSP" },
-    { num: "402", name: "Pohľad sever",      rev: "01", set: ["arch"],        faza: "DSP" },
-    { num: "501", name: "Detail atiky",      rev: "",   set: [],              faza: "RP"  }
+    { num: "101", name: "Situácia",        paper: "A1", rev: "",   set: ["dsp"],        faza: "DSP" },
+    { num: "201", name: "Pôdorys 1.NP",    paper: "A0", rev: "01", set: ["dsp","arch"], faza: "DSP" },
+    { num: "202", name: "Pôdorys 2.NP",    paper: "A0", rev: "01", set: ["dsp","arch"], faza: "DSP" },
+    { num: "203", name: "Pôdorys strechy", paper: "A1", rev: "",   set: ["arch"],       faza: "DSP" },
+    { num: "301", name: "Rez A-A",         paper: "A1", rev: "02", set: ["dsp","arch"], faza: "DSP" },
+    { num: "302", name: "Rez B-B",         paper: "A1", rev: "",   set: ["arch"],       faza: "DSP" },
+    { num: "401", name: "Pohľad juh",      paper: "A2", rev: "01", set: ["arch"],       faza: "DSP" },
+    { num: "402", name: "Pohľad sever",    paper: "A2", rev: "01", set: ["arch"],       faza: "DSP" },
+    { num: "501", name: "Detail atiky",    paper: "A3", rev: "",   set: [],             faza: "RP"  }
   ];
 
   var PROJECT = {
@@ -465,85 +555,151 @@
   };
 
   var PARAMS = [
-    "Sheet Number", "Sheet Name", "Current Revision", "Date", "yyyymmdd", "File Name",
-    "Výkres: Faza", "Projekt: Project Number", "Projekt: Project Name", "Projekt: Investor"
+    "Sheet Number", "Sheet Name", "Current Revision", "Sheet Size", "Date", "yyyymmdd",
+    "File Name", "Výkres: Faza", "Projekt: Project Number", "Projekt: Project Name",
+    "Projekt: Investor"
   ];
+
+  var MODS = { "": "bez úpravy", upper: "VEĽKÉ", lower: "malé", title: "Prvé Veľké", slug: "bez diakritiky" };
+
+  var ACCENTS = {
+    teal:  { light: ["#0b6e7a", "#d9edef", "#ffffff"], dark: ["#46b6c2", "#17323a", "#06222a"] },
+    blue:  { light: ["#1e5aa8", "#dce7f6", "#ffffff"], dark: ["#6fa8e8", "#1a2b42", "#0a1b30"] },
+    slate: { light: ["#44546a", "#dfe4ea", "#ffffff"], dark: ["#9fb2c8", "#26313d", "#101922"] },
+    amber: { light: ["#9a6212", "#f3e5cd", "#ffffff"], dark: ["#d9a44e", "#372a15", "#2a1c06"] },
+    plum:  { light: ["#7a3f6d", "#eddfea", "#ffffff"], dark: ["#c78fb8", "#332030", "#2b1526"] }
+  };
+
+  var PRESETS = {
+    a: [{ p: "Sheet Number" }, { p: "Sheet Name", pre: " - " }],
+    b: [{ p: "Projekt: Project Number" }, { p: "Sheet Number", pre: "-" }, { p: "Sheet Name", pre: "-" }],
+    c: [{ p: "yyyymmdd" }, { p: "Sheet Number", pre: "_" }]
+  };
 
   var PROFILES = {
     dsp: {
       rows: [
-        { p: "Projekt: Project Number", pre: "", suf: "" },
-        { p: "Sheet Number", pre: "-", suf: "" },
-        { p: "Sheet Name", pre: "-", suf: "" },
-        { p: "Current Revision", pre: " R", suf: "" }
+        { p: "Projekt: Project Number" },
+        { p: "Sheet Number", pre: "-" },
+        { p: "Sheet Name", pre: "-" },
+        { p: "Current Revision", pre: " R", fb: "00" }
       ],
       gp: "", gs: "", pdf: true, dwg: true, combine: false, dir: "C:\\Export\\2026-018 DSP", sub: true
     },
     nahlad: {
-      rows: [
-        { p: "Sheet Number", pre: "", suf: "" },
-        { p: "Sheet Name", pre: " - ", suf: "" }
-      ],
+      rows: [{ p: "Sheet Number" }, { p: "Sheet Name", pre: " - " }],
       gp: "", gs: "", pdf: true, dwg: false, combine: true, dir: "C:\\Export\\nahlad", sub: false
     },
     statik: {
-      rows: [
-        { p: "Sheet Number", pre: "", suf: "" },
-        { p: "Sheet Name", pre: "_", suf: "" }
-      ],
+      rows: [{ p: "Sheet Number" }, { p: "Sheet Name", pre: "_" }, { p: "Sheet Size", pre: "_" }],
       gp: "ST_", gs: "", pdf: false, dwg: true, combine: false, dir: "C:\\Export\\statika", sub: false
     }
   };
 
-  var selected = {};
+  var selected = {}, rows = [], draft = [], theme = "system", accent = "teal";
   ["101", "201", "202", "301"].forEach(function (n) { selected[n] = true; });
-  var rows = [];
 
   var $ = function (id) { return document.getElementById(id); };
+  var esc = function (s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;"); };
+  var norm = function (r) {
+    return { p: r.p || "", pre: r.pre || "", suf: r.suf || "", fb: r.fb || "", mod: r.mod || "" };
+  };
 
+  /* --- vzhlad --- */
+  function effectiveDark() {
+    if (theme === "dark") return true;
+    if (theme === "light") return false;
+    return window.matchMedia("(prefers-color-scheme: dark)").matches;
+  }
+
+  function applyLook() {
+    var root = document.documentElement;
+    if (theme === "system") { delete root.dataset.theme; } else { root.dataset.theme = theme; }
+    var set = ACCENTS[accent][effectiveDark() ? "dark" : "light"];
+    root.style.setProperty("--accent", set[0]);
+    root.style.setProperty("--accent-soft", set[1]);
+    root.style.setProperty("--accent-ink", set[2]);
+    $("themebtn").textContent = theme === "system" ? "Systém" : (theme === "light" ? "Svetlý" : "Tmavý");
+    Array.prototype.forEach.call($("swatches").children, function (b) {
+      b.setAttribute("aria-pressed", b.dataset.accent === accent ? "true" : "false");
+    });
+  }
+
+  Object.keys(ACCENTS).forEach(function (key) {
+    var b = document.createElement("button");
+    b.className = "swatch"; b.type = "button"; b.dataset.accent = key;
+    b.title = key; b.setAttribute("aria-label", "Farba " + key);
+    b.style.background = ACCENTS[key].light[0];
+    b.addEventListener("click", function () { accent = key; applyLook(); });
+    $("swatches").appendChild(b);
+  });
+  $("themebtn").addEventListener("click", function () {
+    theme = theme === "system" ? "light" : (theme === "light" ? "dark" : "system");
+    applyLook();
+  });
+  window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", applyLook);
+
+  /* --- nazvy --- */
   function today() {
     var d = new Date(), p = function (n) { return (n < 10 ? "0" : "") + n; };
     return { iso: d.getFullYear() + "-" + p(d.getMonth() + 1) + "-" + p(d.getDate()),
              comp: "" + d.getFullYear() + p(d.getMonth() + 1) + p(d.getDate()) };
   }
 
+  function shortName(name) { return name.replace(/^(Výkres|Projekt): /, ""); }
+
   function resolve(sheet, name) {
-    var clean = name.replace(/^(Výkres|Projekt): /, "");
-    var t = today();
-    if (clean === "Sheet Number") return sheet.num;
-    if (clean === "Sheet Name") return sheet.name;
-    if (clean === "Current Revision") return sheet.rev;
-    if (clean === "Date") return t.iso;
-    if (clean === "yyyymmdd") return t.comp;
-    if (clean === "Faza") return sheet.faza;
-    return PROJECT[clean] || "";
+    var c = shortName(name), t = today();
+    if (c === "Sheet Number") return sheet.num;
+    if (c === "Sheet Name") return sheet.name;
+    if (c === "Current Revision") return sheet.rev;
+    if (c === "Sheet Size") return sheet.paper;
+    if (c === "Date") return t.iso;
+    if (c === "yyyymmdd") return t.comp;
+    if (c === "Faza") return sheet.faza;
+    return PROJECT[c] || "";
   }
 
-  function template() {
+  function applyMod(value, mod) {
+    if (mod === "upper") return value.toUpperCase();
+    if (mod === "lower") return value.toLowerCase();
+    if (mod === "title") return value.replace(/\S+/g, function (w) { return w[0].toUpperCase() + w.slice(1); });
+    if (mod === "slug") return value.normalize("NFKD").replace(/[\u0300-\u036f]/g, "")
+                                    .replace(/[^A-Za-z0-9]+/g, "-").replace(/^-|-$/g, "");
+    return value;
+  }
+
+  function template(list) {
     var out = $("gprefix").value;
-    rows.forEach(function (r) { out += r.pre + "{" + r.p.replace(/^(Výkres|Projekt): /, "") + "}" + r.suf; });
+    list.forEach(function (r) {
+      out += r.pre + (r.p ? "{" + shortName(r.p) + (r.fb ? "|" + r.fb : "") + (r.mod ? ":" + r.mod : "") + "}" : "") + r.suf;
+    });
     return out + $("gsuffix").value;
   }
 
-  function fileName(sheet) {
+  function fileName(sheet, list) {
     var out = $("gprefix").value;
-    rows.forEach(function (r) { out += r.pre + resolve(sheet, r.p) + r.suf; });
+    list.forEach(function (r) {
+      var v = r.p ? resolve(sheet, r.p) : "";
+      if (!v) v = r.fb;
+      out += r.pre + applyMod(v, r.mod) + r.suf;
+    });
     out += $("gsuffix").value;
     return out.replace(/[<>:"/\\|?*]/g, "_").replace(/\s+/g, " ").trim().replace(/[. ]+$/, "");
   }
 
+  /* --- vyber vykresov --- */
   function visibleSheets() {
     var q = $("filter").value.toLowerCase(), set = $("sheetset").value;
     return SHEETS.filter(function (s) {
       if (set && s.set.indexOf(set) === -1) return false;
-      return !q || (s.num + " " + s.name).toLowerCase().indexOf(q) !== -1;
+      return !q || (s.num + " " + s.name + " " + s.paper).toLowerCase().indexOf(q) !== -1;
     });
   }
-
   function chosen() { return SHEETS.filter(function (s) { return selected[s.num]; }); }
 
   function drawSheets() {
-    var host = $("sheetlist"), vis = visibleSheets();
+    var host = $("sheetrows"), vis = visibleSheets();
     host.innerHTML = "";
     if (!vis.length) {
       host.innerHTML = '<div style="padding:12px;color:var(--muted)">Filtru nezodpovedá žiadny výkres.</div>';
@@ -553,8 +709,9 @@
       row.className = "sheetrow";
       row.innerHTML = '<input type="checkbox"' + (selected[s.num] ? " checked" : "") + '>' +
         '<span class="num">' + s.num + '</span>' +
-        '<span class="nm">' + s.name + '</span>' +
-        (s.rev ? '<span class="rev">R' + s.rev + '</span>' : '<span class="rev" style="opacity:.35">—</span>');
+        '<span class="nm">' + esc(s.name) + '</span>' +
+        '<span class="paper">' + s.paper + '</span>' +
+        '<span class="rev">' + (s.rev ? "R" + s.rev : "—") + '</span>';
       row.querySelector("input").addEventListener("change", function (e) {
         selected[s.num] = e.target.checked;
         refresh();
@@ -564,55 +721,111 @@
     $("sheetcount").textContent = chosen().length + " z " + SHEETS.length;
   }
 
+  /* --- pas ziletiek --- */
+  function drawChips() {
+    var host = $("chips");
+    host.innerHTML = "";
+    if ($("gprefix").value) {
+      host.insertAdjacentHTML("beforeend",
+        '<span class="chip text"><span class="lit">' + esc($("gprefix").value) + '</span></span>');
+    }
+    if (!rows.length && !$("gprefix").value && !$("gsuffix").value) {
+      host.innerHTML = '<span class="empty">Názov nie je nastavený — otvor „Upraviť názov…"</span>';
+      return;
+    }
+    rows.forEach(function (r) {
+      var inner = "";
+      if (r.pre) inner += '<span class="lit">' + esc(r.pre) + '</span>';
+      inner += r.p ? '<span class="par">' + esc(shortName(r.p)) + '</span>'
+                   : '<span class="lit">' + esc(r.suf || "text") + '</span>';
+      if (r.p && r.suf) inner += '<span class="lit">' + esc(r.suf) + '</span>';
+      if (r.mod) inner += '<span class="lit">·' + r.mod + '</span>';
+      host.insertAdjacentHTML("beforeend",
+        '<span class="chip' + (r.p ? "" : " text") + '">' + inner + '</span>');
+    });
+    if ($("gsuffix").value) {
+      host.insertAdjacentHTML("beforeend",
+        '<span class="chip text"><span class="lit">' + esc($("gsuffix").value) + '</span></span>');
+    }
+  }
+
+  /* --- tabulka v modale --- */
   function drawRows() {
     var host = $("rows");
     host.innerHTML = "";
-    rows.forEach(function (r, i) {
+    draft.forEach(function (r, i) {
       var tr = document.createElement("tr");
-
-      var opts = PARAMS.map(function (p) {
-        return '<option value="' + p + '"' + (p === r.p ? " selected" : "") + '>' + p + '</option>';
+      var opts = '<option value="">(iba text)</option>' + PARAMS.map(function (p) {
+        return '<option value="' + esc(p) + '"' + (p === r.p ? " selected" : "") + '>' + esc(p) + '</option>';
+      }).join("");
+      var mods = Object.keys(MODS).map(function (m) {
+        return '<option value="' + m + '"' + (m === r.mod ? " selected" : "") + '>' + MODS[m] + '</option>';
       }).join("");
 
       tr.innerHTML =
         '<td><select>' + opts + '</select></td>' +
-        '<td><input type="text" class="mono" value="' + r.pre.replace(/"/g, "&quot;") + '"></td>' +
-        '<td><input type="text" class="mono" value="' + r.suf.replace(/"/g, "&quot;") + '"></td>' +
+        '<td><input type="text" class="mono" value="' + esc(r.pre) + '"></td>' +
+        '<td><input type="text" class="mono" value="' + esc(r.suf) + '"></td>' +
+        '<td><input type="text" class="mono" value="' + esc(r.fb) + '"' +
+          (r.p ? "" : ' disabled title="platí len pre parameter"') + '></td>' +
+        '<td><select' + (r.p ? "" : " disabled") + '>' + mods + '</select></td>' +
         '<td><div class="rowbtns">' +
           '<button type="button" class="icon" title="hore">↑</button>' +
           '<button type="button" class="icon" title="dole">↓</button>' +
           '<button type="button" class="icon" title="odobrať">✕</button>' +
         '</div></td>';
 
-      var cells = tr.querySelectorAll("select, input, button");
-      cells[0].addEventListener("change", function (e) { r.p = e.target.value; refresh(); });
-      cells[1].addEventListener("input", function (e) { r.pre = e.target.value; refresh(); });
-      cells[2].addEventListener("input", function (e) { r.suf = e.target.value; refresh(); });
-      cells[3].addEventListener("click", function () {
-        if (i > 0) { rows.splice(i - 1, 0, rows.splice(i, 1)[0]); drawRows(); refresh(); }
-      });
-      cells[4].addEventListener("click", function () {
-        if (i < rows.length - 1) { rows.splice(i + 1, 0, rows.splice(i, 1)[0]); drawRows(); refresh(); }
-      });
-      cells[5].addEventListener("click", function () {
-        rows.splice(i, 1); drawRows(); refresh();
-      });
+      var f = tr.querySelectorAll("select, input, button");
+      f[0].addEventListener("change", function (e) { r.p = e.target.value; drawRows(); dpreview(); });
+      f[1].addEventListener("input", function (e) { r.pre = e.target.value; dpreview(); });
+      f[2].addEventListener("input", function (e) { r.suf = e.target.value; dpreview(); });
+      f[3].addEventListener("input", function (e) { r.fb = e.target.value; dpreview(); });
+      f[4].addEventListener("change", function (e) { r.mod = e.target.value; dpreview(); });
+      f[5].addEventListener("click", function () {
+        if (i > 0) { draft.splice(i - 1, 0, draft.splice(i, 1)[0]); drawRows(); dpreview(); } });
+      f[6].addEventListener("click", function () {
+        if (i < draft.length - 1) { draft.splice(i + 1, 0, draft.splice(i, 1)[0]); drawRows(); dpreview(); } });
+      f[7].addEventListener("click", function () { draft.splice(i, 1); drawRows(); dpreview(); });
 
       host.appendChild(tr);
     });
 
-    if (!rows.length) {
-      host.innerHTML = '<tr><td colspan="4" style="color:var(--muted);padding:6px 0">' +
-        'Zatiaľ žiadna časť názvu — pridaj parameter nižšie.</td></tr>';
+    if (!draft.length) {
+      host.innerHTML = '<tr><td colspan="6" style="color:var(--muted);padding:8px 0">' +
+        'Zatiaľ žiadna časť — pridaj parameter alebo text nižšie.</td></tr>';
     }
+    $("dcount").textContent = draft.length + (draft.length === 1 ? " časť" : (draft.length < 5 ? " časti" : " častí"));
   }
 
+  function dpreview() {
+    $("tpl").textContent = template(draft) || "(prázdna)";
+    var pick = chosen()[0] || SHEETS[0];
+    $("dprev").textContent = fileName(pick, draft) || "(prázdny názov)";
+
+    var names = chosen().map(function (s) { return fileName(s, draft).toLowerCase(); });
+    var dupes = names.length !== new Set(names).size;
+    $("dwarn").innerHTML = dupes
+      ? '<span class="note-warn">Dva z vybraných výkresov dávajú rovnaký názov — ostrý export by k druhému pridal <code>_2</code>.</span>'
+      : "";
+  }
+
+  function openDialog() {
+    draft = rows.map(function (r) { return norm(r); });
+    drawRows(); dpreview();
+    $("backdrop").hidden = false;
+    $("preset").value = "";
+    $("dok").focus();
+  }
+  function closeDialog() { $("backdrop").hidden = true; $("editname").focus(); }
+
+  /* --- hlavne okno --- */
   function refresh() {
     drawSheets();
-    $("tpl").textContent = template() || "(prázdna)";
+    drawChips();
     var pick = chosen()[0];
-    $("prev").textContent = pick ? fileName(pick) + (($("fmt-pdf").checked) ? ".pdf" : ".dwg")
-                                 : "(nie je vybraný žiadny výkres)";
+    $("prev").textContent = pick
+      ? fileName(pick, rows) + ($("fmt-pdf").checked ? ".pdf" : ".dwg")
+      : "(nie je vybraný žiadny výkres)";
     $("pdf-opts").hidden = !$("fmt-pdf").checked;
     $("dwg-opts").hidden = !$("fmt-dwg").checked;
 
@@ -627,29 +840,24 @@
 
   function runExport() {
     var list = $("reslist"), sheets = chosen(), items = [];
-    var sub = $("subfolders").checked && ($("fmt-pdf").checked && $("fmt-dwg").checked);
+    var sub = $("subfolders").checked && $("fmt-pdf").checked && $("fmt-dwg").checked;
     var base = $("outdir").value.replace(/\\+$/, "");
 
     if ($("fmt-pdf").checked) {
       if ($("pdf-combine").checked) {
         items.push(["PDF", (sub ? base + "\\PDF" : base) + "\\" + PROJECT["File Name"] + " - vykresy.pdf"]);
       } else {
-        sheets.forEach(function (s) {
-          items.push(["PDF", (sub ? base + "\\PDF" : base) + "\\" + fileName(s) + ".pdf"]);
-        });
+        sheets.forEach(function (s) { items.push(["PDF", (sub ? base + "\\PDF" : base) + "\\" + fileName(s, rows) + ".pdf"]); });
       }
     }
     if ($("fmt-dwg").checked) {
-      sheets.forEach(function (s) {
-        items.push(["DWG", (sub ? base + "\\DWG" : base) + "\\" + fileName(s) + ".dwg"]);
-      });
+      sheets.forEach(function (s) { items.push(["DWG", (sub ? base + "\\DWG" : base) + "\\" + fileName(s, rows) + ".dwg"]); });
     }
 
     list.innerHTML = "";
     items.forEach(function (it) {
       var li = document.createElement("li");
-      li.innerHTML = '<span class="tag ' + it[0].toLowerCase() + '">' + it[0] + '</span>' +
-                     '<span>' + it[1].replace(/&/g, "&amp;").replace(/</g, "&lt;") + '</span>';
+      li.innerHTML = '<span class="tag ' + it[0].toLowerCase() + '">' + it[0] + '</span><span>' + esc(it[1]) + '</span>';
       list.appendChild(li);
     });
 
@@ -664,7 +872,7 @@
 
   function loadProfile(key) {
     var p = PROFILES[key];
-    rows = p.rows.map(function (r) { return { p: r.p, pre: r.pre, suf: r.suf }; });
+    rows = p.rows.map(norm);
     $("gprefix").value = p.gp;
     $("gsuffix").value = p.gs;
     $("fmt-pdf").checked = p.pdf;
@@ -672,11 +880,10 @@
     $("pdf-combine").checked = p.combine;
     $("outdir").value = p.dir;
     $("subfolders").checked = p.sub;
-    drawRows();
     refresh();
   }
 
-  // --- naviazanie ---
+  /* --- naviazanie --- */
   PARAMS.forEach(function (p) {
     var o = document.createElement("option");
     o.value = p; o.textContent = p;
@@ -685,35 +892,54 @@
 
   $("addparam").addEventListener("change", function (e) {
     if (!e.target.value) return;
-    rows.push({ p: e.target.value, pre: rows.length ? " - " : "", suf: "" });
+    draft.push(norm({ p: e.target.value, pre: draft.length ? " - " : "" }));
     e.target.value = "";
-    drawRows(); refresh();
+    drawRows(); dpreview();
+  });
+  $("addtext").addEventListener("click", function () {
+    draft.push(norm({ suf: "_text" }));
+    drawRows(); dpreview();
+  });
+  $("preset").addEventListener("change", function (e) {
+    if (!e.target.value) return;
+    draft = PRESETS[e.target.value].map(norm);
+    drawRows(); dpreview();
+  });
+
+  $("editname").addEventListener("click", openDialog);
+  $("dclose").addEventListener("click", closeDialog);
+  $("dcancel").addEventListener("click", closeDialog);
+  $("dok").addEventListener("click", function () {
+    rows = draft.map(function (r) { return norm(r); });
+    closeDialog(); refresh();
+  });
+  $("backdrop").addEventListener("click", function (e) { if (e.target === $("backdrop")) closeDialog(); });
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape" && !$("backdrop").hidden) closeDialog();
   });
 
   ["filter", "sheetset"].forEach(function (id) {
     $(id).addEventListener("input", drawSheets);
     $(id).addEventListener("change", drawSheets);
   });
-
   document.querySelectorAll("[data-sel]").forEach(function (b) {
     b.addEventListener("click", function () {
-      var mode = b.getAttribute("data-sel"), vis = visibleSheets();
+      var mode = b.getAttribute("data-sel");
       if (mode === "all") SHEETS.forEach(function (s) { selected[s.num] = true; });
       if (mode === "none") selected = {};
       if (mode === "invert") SHEETS.forEach(function (s) { selected[s.num] = !selected[s.num]; });
-      if (mode === "visible") vis.forEach(function (s) { selected[s.num] = true; });
+      if (mode === "visible") visibleSheets().forEach(function (s) { selected[s.num] = true; });
       refresh();
     });
   });
-
-  ["gprefix", "gsuffix", "outdir"].forEach(function (id) {
-    $(id).addEventListener("input", refresh);
-  });
+  ["gprefix", "gsuffix"].forEach(function (id) { $(id).addEventListener("input", dpreview); });
+  $("outdir").addEventListener("input", refresh);
   ["fmt-pdf", "fmt-dwg", "pdf-combine", "subfolders"].forEach(function (id) {
     $(id).addEventListener("change", refresh);
   });
   $("profile").addEventListener("change", function (e) { loadProfile(e.target.value); });
   $("run").addEventListener("click", runExport);
 
+  applyLook();
   loadProfile("dsp");
 </script>
