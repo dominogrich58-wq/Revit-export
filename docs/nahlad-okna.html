@@ -92,24 +92,33 @@
   }
   .titlebar {
     display: flex; align-items: center; gap: 10px;
-    padding: 9px 14px; background: var(--surface-3); border-bottom: 1px solid var(--line);
+    padding: 9px 14px; background: var(--accent); color: var(--accent-ink);
   }
   .titlebar .mark {
-    width: 18px; height: 18px; border-radius: 3px; background: var(--accent);
+    width: 18px; height: 18px; border-radius: 3px;
+    background: color-mix(in srgb, var(--accent-ink) 22%, transparent);
     display: grid; place-items: center; color: var(--accent-ink);
     font-family: var(--mono); font-size: 11px; font-weight: 600;
   }
   .titlebar .name { font-weight: 600; }
-  .titlebar .model { color: var(--muted); font-family: var(--mono); font-size: 12px; }
+  .titlebar .model { font-family: var(--mono); font-size: 12px; opacity: .72; }
+  .titlebar .lbl { color: inherit; opacity: .72; }
   .titlebar .chrome { margin-left: auto; display: flex; align-items: center; gap: 10px; }
-  .titlebar .close { color: var(--muted); font-size: 15px; line-height: 1; }
+  .titlebar .close { font-size: 15px; line-height: 1; opacity: .8; }
+  .titlebar button {
+    color: var(--accent-ink);
+    background: color-mix(in srgb, var(--accent-ink) 14%, transparent);
+    border-color: color-mix(in srgb, var(--accent-ink) 34%, transparent);
+  }
+  .titlebar button:hover { background: color-mix(in srgb, var(--accent-ink) 26%, transparent); }
 
   .swatches { display: flex; gap: 4px; }
   .swatch {
-    width: 15px; height: 15px; border-radius: 50%; border: 1px solid rgba(0, 0, 0, .18);
-    padding: 0; cursor: pointer;
+    width: 15px; height: 15px; border-radius: 50%; padding: 0; cursor: pointer;
+    border: 1px solid color-mix(in srgb, var(--accent-ink) 45%, transparent);
   }
-  .swatch[aria-pressed="true"] { box-shadow: 0 0 0 2px var(--surface-3), 0 0 0 3px var(--ink); }
+  .swatch:hover { filter: brightness(1.1); }
+  .swatch[aria-pressed="true"] { box-shadow: 0 0 0 2px var(--accent), 0 0 0 3.5px var(--accent-ink); }
   .themebtn { font-size: 12px; padding: 2px 8px; }
 
   .profilebar {
@@ -119,7 +128,7 @@
   .lbl { font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
   .profilebar .spacer { flex: 1; }
 
-  .body-grid { display: grid; grid-template-columns: 372px 1fr; }
+  .body-grid { display: grid; grid-template-columns: 430px 1fr; }
   @media (max-width: 940px) { .body-grid { grid-template-columns: 1fr; } }
 
   .col-sheets { border-right: 1px solid var(--line-soft); }
@@ -138,11 +147,11 @@
   /* --- zoznam vykresov --- */
   .sheetlist {
     border: 1px solid var(--line); border-radius: 4px; background: var(--surface-2);
-    max-height: 292px; overflow-y: auto;
+    max-height: 330px; overflow-y: auto;
   }
   .sheethead, .sheetrow {
-    display: grid; grid-template-columns: 18px 44px 1fr 34px 30px; align-items: center; gap: 8px;
-    padding: 5px 9px;
+    display: grid; grid-template-columns: 18px 48px 1fr 74px 34px; align-items: center; gap: 9px;
+    padding: 5px 10px;
   }
   .sheethead {
     position: sticky; top: 0; background: var(--surface-3); border-bottom: 1px solid var(--line);
@@ -154,10 +163,10 @@
   .sheetrow .num { font-family: var(--mono); font-size: 12px; font-weight: 500; }
   .sheetrow .nm { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .paper {
-    font-family: var(--mono); font-size: 10px; font-weight: 600; text-align: center;
-    border-radius: 2px; padding: 1px 0; color: var(--accent); background: var(--accent-soft);
+    font-family: var(--mono); font-size: 11px; color: var(--muted);
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
   }
-  .rev { font-family: var(--mono); font-size: 10px; color: var(--muted); text-align: center; }
+  .rev { font-family: var(--mono); font-size: 11px; color: var(--muted); text-align: right; }
   .rowbtns { display: flex; gap: 6px; flex-wrap: wrap; }
 
   /* --- prvky --- */
@@ -229,17 +238,31 @@
   .actions { display: flex; align-items: center; gap: 10px; }
   .actions .status { color: var(--muted); font-size: 12px; margin-right: auto; }
 
-  .result { border-top: 1px solid var(--line); padding: 14px; display: flex; flex-direction: column; gap: 9px; }
-  .result[hidden] { display: none; }
-  .result ol { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 2px;
-               max-height: 220px; overflow-y: auto; }
-  .result li {
-    display: grid; grid-template-columns: 54px 1fr; gap: 10px; align-items: baseline;
+  .stage { padding: 18px; display: flex; flex-direction: column; gap: 12px; min-height: 200px; }
+  .stage[hidden] { display: none; }
+  .stage ol { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 2px;
+              max-height: 260px; overflow-y: auto; }
+  .stage li {
+    display: grid; grid-template-columns: 62px 54px 1fr; gap: 10px; align-items: baseline;
     font-family: var(--mono); font-size: 12px; padding: 2px 0;
   }
-  .result .tag { font-weight: 600; font-size: 10px; letter-spacing: .05em; }
-  .result .tag.pdf { color: var(--danger); }
-  .result .tag.dwg { color: var(--accent); }
+  .stage .tag { font-weight: 600; font-size: 10px; letter-spacing: .05em; }
+  .stage .tag.pdf { color: var(--danger); }
+  .stage .tag.dwg { color: var(--accent); }
+  .stage .st { font-size: 10px; font-weight: 600; letter-spacing: .05em; }
+  .stage .st.ok { color: var(--ok); }
+  .stage .st.ren { color: var(--warn); }
+  .stagerow { display: flex; gap: 12px; align-items: baseline; }
+  .stagerow .mono { font-family: var(--mono); font-size: 13px; }
+  .bar { height: 8px; border-radius: 4px; background: var(--surface-3); overflow: hidden; }
+  .bar .fill { height: 100%; width: 0; background: var(--accent); transition: width .12s linear; }
+  .summary {
+    display: flex; flex-wrap: wrap; gap: 8px 22px; padding: 10px 12px;
+    background: var(--surface-2); border: 1px solid var(--line); border-radius: 4px;
+  }
+  .summary b { font-family: var(--mono); font-size: 16px; font-weight: 600; }
+  .summary .cell { display: flex; flex-direction: column; }
+  .summary .cell span { font-size: 11px; letter-spacing: .07em; text-transform: uppercase; color: var(--muted); }
   .note-ok { color: var(--ok); font-weight: 500; }
   .note-warn { color: var(--warn); font-weight: 500; }
 
@@ -254,7 +277,6 @@
     box-shadow: var(--shadow); width: min(820px, 100%); max-height: 100%;
     display: flex; flex-direction: column; overflow: hidden;
   }
-  .dialog .titlebar { background: var(--surface-3); }
   .dialog .dbody { padding: 16px; display: flex; flex-direction: column; gap: 12px; overflow-y: auto; }
   .dialog .dfoot {
     border-top: 1px solid var(--line); background: var(--surface-2); padding: 12px 16px;
@@ -295,8 +317,8 @@
   <div class="intro">
     <div>
       <h1>SheetPilot — návrh jedného okna</h1>
-      <p>Klikací náhľad rozhrania, ktoré nahradí sled vyskakovacích dialógov. Skladačka
-         názvu je teraz pás žiletiek s detailným nastavením v samostatnom okne.</p>
+      <p>Klikací náhľad rozhrania, ktoré nahradí sled vyskakovacích dialógov. Po stlačení
+         <em>Exportovať</em> sa okno prepne na priebeh a potom na výsledok.</p>
     </div>
     <span class="mock-flag">Náhľad — nie je pripojený na Revit</span>
   </div>
@@ -314,6 +336,7 @@
       </span>
     </div>
 
+    <div id="formview">
     <div class="profilebar">
       <span class="lbl">Profil</span>
       <select id="profile">
@@ -414,67 +437,97 @@
       </div>
     </div>
 
-    <div class="result" id="result" hidden>
-      <div class="eyebrow">Súbory, ktoré by vznikli <span class="count" id="rescount"></span></div>
+    </div><!-- /formview -->
+
+    <div class="stage" id="progressview" hidden>
+      <div class="eyebrow">Prebieha export</div>
+      <div class="bar"><div class="fill" id="fill"></div></div>
+      <div class="stagerow">
+        <span class="mono" id="progtext">—</span>
+        <span class="dim" id="progcount"></span>
+      </div>
+      <div class="actions"><span class="spacer" style="flex:1"></span>
+        <button type="button" id="cancelrun">Prerušiť</button></div>
+    </div>
+
+    <div class="stage" id="resultview" hidden>
+      <div class="eyebrow">Hotovo <span class="count" id="rescount"></span></div>
+      <div class="summary" id="ressum"></div>
       <ol id="reslist"></ol>
       <div id="resnote"></div>
+      <div class="actions">
+        <span class="status dim" id="reslog"></span>
+        <button type="button" id="back">Späť na nastavenia</button>
+        <button type="button" class="primary" id="openfolder">Otvoriť priečinok</button>
+      </div>
     </div>
+
   </div>
 
   <div class="review">
-    <h2>Na čom sa potrebujeme dohodnúť</h2>
-    <p>Napíš mi číslo otázky a odpoveď — napríklad „Q3: áno, ale daj to vpravo hore".
-       Rovnako pošli hocičo, čo ti tu chýba alebo prekáža.</p>
+    <h2>Zapracované a čo ešte otvorené</h2>
+    <p>Napíš mi číslo otázky a odpoveď. Vybavené body nechávam v zozname, aby bolo vidieť,
+       čo sme si už odsúhlasili.</p>
     <ol>
       <li>
         <div>
-          <div class="q">Je rozdelenie na dva stĺpce správne?</div>
-          <div class="a">Vľavo výkresy, vpravo nastavenia. Alternatíva je výkresy dole cez celú
-            šírku — zoznam dostane viac miesta, okno bude vyššie.</div>
+          <div class="q">Rozdelenie na dva stĺpce <span class="done">hotovo</span></div>
+          <div class="a">Zoznam výkresov je širší o 60 px a vyšší o dva riadky.</div>
         </div>
       </li>
       <li>
         <div>
-          <div class="q">Sedia stĺpce v zozname výkresov? <span class="done">papier doplnený</span></div>
-          <div class="a">Teraz číslo, názov, papier, revízia. Vieme pridať dátum vydania, fázu
-            alebo mierku — každý ďalší stĺpec však uberá miesto názvu.</div>
+          <div class="q">Papier v zozname — z ktorého parametra ho brať?</div>
+          <div class="a">Toto ešte potrebujem od teba. Písal si, že tam bude číslo, nie formát —
+            takže hodnota nepríde z formátu papiera, ale z niečoho vo výkrese. Otvor si
+            v Reviteu vlastnosti výkresu a napíš mi <b>presný názov parametra</b> a čo v ňom máš
+            (napr. <code>Sheet Size</code> → <code>A1</code>, alebo typ rohovej pečiatky →
+            <code>594x841</code>). Stĺpec potom vypíše presne túto hodnotu a bude sa dať použiť
+            aj ako token v názve súboru.</div>
         </div>
       </li>
       <li>
         <div>
-          <div class="q">Funguje pás žiletiek + samostatné okno? <span class="done">prerobené</span></div>
-          <div class="a">Osem častí názvu sa teraz zmestí na dva riadky. Detail sa rieši
-            v okne <em>Upraviť názov</em>, kde je miesto aj na náhradnú hodnotu a veľkosť písmen.
-            Alternatíva: žiletky urobiť klikacie, aby sa dala upraviť jedna bez otvárania okna.</div>
+          <div class="q">Žiletky + samostatné okno na názov <span class="done">hotovo</span></div>
+          <div class="a">Detail vrátane náhradnej hodnoty a veľkosti písmen je v okne
+            <em>Upraviť názov</em>.</div>
         </div>
       </li>
       <li>
         <div>
-          <div class="q">Sadli by ti farby? <span class="done">na výber päť</span></div>
-          <div class="a">Vpravo hore v titulku. K tomu svetlý / tmavý / podľa systému.
-            Vo WPF to znamená malú sadu farieb — nie ľubovoľný farebný výber, ale povedz,
-            ak ti tam nejaká chýba.</div>
+          <div class="q">Farebná lišta <span class="done">hotovo</span></div>
+          <div class="a">Titulok je teraz vyfarbený, nie sivý. Prvá farba zostáva predvolená.
+            Ostatné štyri si môžeš preklikať a povedať, či ich vôbec chceš — pokojne ich
+            zredukujem na jednu firemnú.</div>
         </div>
       </li>
       <li>
         <div>
-          <div class="q">Má byť zoznam vzniknutých súborov stále viditeľný?</div>
-          <div class="a">Teraz sa ukáže až po stlačení <em>Exportovať</em>. Môže byť aj trvalo
-            dole, aby si videl dopad každej zmeny okamžite.</div>
+          <div class="q">Zoznam vzniknutých súborov <span class="done">hotovo</span></div>
+          <div class="a">Ostáva až po exporte, ako si chcel.</div>
         </div>
       </li>
       <li>
         <div>
-          <div class="q">Priebeh exportu — v okne alebo mimo?</div>
-          <div class="a">Buď sa okno prepne na ukazovateľ priebehu a potom na výsledok, alebo
-            sa zavrie a priebeh ide cez štandardné okno pyRevitu ako teraz.</div>
+          <div class="q">Priebeh exportu <span class="done">hotovo</span></div>
+          <div class="a">Okno sa prepne na ukazovateľ priebehu s možnosťou prerušiť, potom
+            na výsledok so súhrnom a odkazom na CSV log. <em>Späť na nastavenia</em> ťa vráti
+            na formulár so všetkým, čo si mal nastavené.</div>
         </div>
       </li>
       <li>
         <div>
-          <div class="q">Má sa dať filtrovať aj podľa papiera?</div>
-          <div class="a">Keď už je papier v zozname, ponúka sa „vyber všetky A1" jedným klikom.
-            Podobne podľa revízie alebo fázy.</div>
+          <div class="q">Čo má okno spraviť, keď jeden výkres zlyhá?</div>
+          <div class="a">Teraz to jadro rieši tak, že pokračuje ďalej a chybu zapíše do logu —
+            jeden pokazený výkres nezhodí celú dávku. Vyhovuje, alebo chceš pri chybe zastať
+            a opýtať sa?</div>
+        </div>
+      </li>
+      <li>
+        <div>
+          <div class="q">Má si okno pamätať veľkosť a polohu?</div>
+          <div class="a">Dá sa uložiť medzi nastavenia, aby sa ti otváralo tam, kde si ho nechal.
+            Drobnosť, ale pri dvoch monitoroch to je rozdiel.</div>
         </div>
       </li>
     </ol>
@@ -835,39 +888,97 @@
       : !fmts ? "Nie je zvolený formát."
       : n + (n === 1 ? " výkres" : (n < 5 ? " výkresy" : " výkresov")) + ", " +
         ($("pdf-combine").checked && $("fmt-pdf").checked ? "spojené PDF" : "samostatné súbory");
-    $("result").hidden = true;
   }
 
-  function runExport() {
-    var list = $("reslist"), sheets = chosen(), items = [];
+  function showStage(which) {
+    $("formview").hidden = which !== "form";
+    $("progressview").hidden = which !== "progress";
+    $("resultview").hidden = which !== "result";
+  }
+
+  function plan() {
+    var sheets = chosen(), items = [], used = {};
     var sub = $("subfolders").checked && $("fmt-pdf").checked && $("fmt-dwg").checked;
     var base = $("outdir").value.replace(/\\+$/, "");
 
+    function unique(name) {
+      var key = name.toLowerCase(), n = 2, candidate = name;
+      while (used[candidate.toLowerCase()]) { candidate = name + "_" + n; n++; }
+      used[candidate.toLowerCase()] = true;
+      return { name: candidate, renamed: candidate !== name };
+    }
+
     if ($("fmt-pdf").checked) {
+      var pdfDir = (sub ? base + "\\PDF" : base);
       if ($("pdf-combine").checked) {
-        items.push(["PDF", (sub ? base + "\\PDF" : base) + "\\" + PROJECT["File Name"] + " - vykresy.pdf"]);
+        items.push({ fmt: "PDF", sheet: sheets.length + " výkresov",
+                     path: pdfDir + "\\" + PROJECT["File Name"] + " - vykresy.pdf", renamed: false });
       } else {
-        sheets.forEach(function (s) { items.push(["PDF", (sub ? base + "\\PDF" : base) + "\\" + fileName(s, rows) + ".pdf"]); });
+        sheets.forEach(function (s2) {
+          var u = unique(fileName(s2, rows));
+          items.push({ fmt: "PDF", sheet: s2.num, path: pdfDir + "\\" + u.name + ".pdf", renamed: u.renamed });
+        });
       }
     }
     if ($("fmt-dwg").checked) {
-      sheets.forEach(function (s) { items.push(["DWG", (sub ? base + "\\DWG" : base) + "\\" + fileName(s, rows) + ".dwg"]); });
+      var dwgDir = (sub ? base + "\\DWG" : base);
+      sheets.forEach(function (s2) {
+        var u = unique(fileName(s2, rows));
+        items.push({ fmt: "DWG", sheet: s2.num, path: dwgDir + "\\" + u.name + ".dwg", renamed: u.renamed });
+      });
     }
+    return items;
+  }
 
+  var timer = null;
+
+  function runExport() {
+    var items = plan(), i = 0;
+    showStage("progress");
+    $("fill").style.width = "0%";
+    $("progtext").textContent = "Pripravujem…";
+    $("progcount").textContent = "0 z " + items.length;
+
+    timer = setInterval(function () {
+      if (i >= items.length) { clearInterval(timer); timer = null; showResult(items); return; }
+      var it = items[i];
+      i++;
+      $("fill").style.width = Math.round(i / items.length * 100) + "%";
+      $("progtext").textContent = it.fmt + "  " + it.sheet;
+      $("progcount").textContent = i + " z " + items.length;
+    }, 320);
+  }
+
+  function showResult(items) {
+    var renamed = items.filter(function (i) { return i.renamed; }).length;
+    var pdfs = items.filter(function (i) { return i.fmt === "PDF"; }).length;
+    var dwgs = items.length - pdfs;
+
+    $("ressum").innerHTML =
+      '<div class="cell"><span>Súbory</span><b>' + items.length + '</b></div>' +
+      '<div class="cell"><span>PDF</span><b>' + pdfs + '</b></div>' +
+      '<div class="cell"><span>DWG</span><b>' + dwgs + '</b></div>' +
+      '<div class="cell"><span>Čas</span><b>' + (items.length * 0.32).toFixed(1) + ' s</b></div>';
+
+    var list = $("reslist");
     list.innerHTML = "";
     items.forEach(function (it) {
       var li = document.createElement("li");
-      li.innerHTML = '<span class="tag ' + it[0].toLowerCase() + '">' + it[0] + '</span><span>' + esc(it[1]) + '</span>';
+      li.innerHTML = '<span class="st ' + (it.renamed ? "ren" : "ok") + '">' +
+                     (it.renamed ? "PREMEN." : "OK") + '</span>' +
+                     '<span class="tag ' + it.fmt.toLowerCase() + '">' + it.fmt + '</span>' +
+                     '<span>' + esc(it.path) + '</span>';
       list.appendChild(li);
     });
 
-    var names = items.map(function (i) { return i[1].toLowerCase(); });
-    var dupes = names.length !== new Set(names).size;
     $("rescount").textContent = items.length + (items.length === 1 ? " súbor" : " súborov");
-    $("resnote").innerHTML = dupes
-      ? '<span class="note-warn">Pozor: dva výkresy dávajú rovnaký názov. Ostrý export by k druhému pridal <code>_2</code>.</span>'
-      : '<span class="note-ok">Všetky názvy sú jedinečné.</span>';
-    $("result").hidden = false;
+    $("resnote").innerHTML = renamed
+      ? '<span class="note-warn">' + renamed + '&times; sa názov opakoval, preto pribudlo <code>_2</code>. ' +
+        'Ak to nechceš, pridaj do názvu číslo výkresu.</span>'
+      : '<span class="note-ok">Všetky názvy boli jedinečné.</span>';
+    $("reslog").textContent = "Log: " + $("outdir").value + "\\SheetPilot-log-" +
+      today().comp + "-0914.csv";
+    showStage("result");
   }
 
   function loadProfile(key) {
@@ -939,7 +1050,14 @@
   });
   $("profile").addEventListener("change", function (e) { loadProfile(e.target.value); });
   $("run").addEventListener("click", runExport);
+  $("cancelrun").addEventListener("click", function () {
+    if (timer) { clearInterval(timer); timer = null; }
+    showStage("form");
+  });
+  $("back").addEventListener("click", function () { showStage("form"); });
+  $("openfolder").addEventListener("click", function () { showStage("form"); });
 
   applyLook();
   loadProfile("dsp");
+  showStage("form");
 </script>
