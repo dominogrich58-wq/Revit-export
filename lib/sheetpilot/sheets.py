@@ -106,6 +106,40 @@ def parameter_as_text(parameter):
     return ""
 
 
+# Revit drzi dlzky vnutorne v decimalnych stopach; 1 stopa = presne 304.8 mm.
+MM_PER_FOOT = 304.8
+
+
+def feet_to_mm(value):
+    """Interna dlzka Revitu -> milimetre, zaokruhlene na cele."""
+    return int(round(value * MM_PER_FOOT))
+
+
+def sheet_size_mm(sheet):
+    """(sirka, vyska) vykresu v mm z parametrov Sheet Width a Sheet Height.
+
+    Vracia (None, None), ked vykres tie parametre nema - napr. placeholder
+    alebo vykres bez rohovej peciatky.
+    """
+    try:
+        DB = db()
+        width = sheet.get_Parameter(DB.BuiltInParameter.SHEET_WIDTH)
+        height = sheet.get_Parameter(DB.BuiltInParameter.SHEET_HEIGHT)
+    except Exception:
+        return None, None
+    if width is None or height is None or not width.HasValue or not height.HasValue:
+        return None, None
+    return feet_to_mm(width.AsDouble()), feet_to_mm(height.AsDouble())
+
+
+def sheet_size_label(sheet):
+    """Rozmer vykresu ako '841x594', alebo prazdny retazec."""
+    width, height = sheet_size_mm(sheet)
+    if width is None:
+        return ""
+    return u"%d\u00d7%d" % (width, height)
+
+
 def current_revision(doc, sheet):
     """(cislo, datum, popis) aktualnej revizie vykresu; prazdne ak ziadna nie je."""
     revision_id = sheet.GetCurrentRevision()
@@ -132,8 +166,12 @@ def make_resolver(doc, sheet):
     # aby sa modul spraval rovnako aj mimo Windows (testy, CI).
     model_name = os.path.splitext(model_path.replace("\\", "/").split("/")[-1])[0]
 
+    width, height = sheet_size_mm(sheet)
+
     specials = {
         "sheet number": sheet.SheetNumber,
+        "sheet width": "" if width is None else str(width),
+        "sheet height": "" if height is None else str(height),
         "sheet name": sheet.Name,
         "current revision": revision_number,
         "current revision date": revision_date,
@@ -171,6 +209,8 @@ BUILTIN_TOKENS = (
     "Current Revision",
     "Current Revision Date",
     "Current Revision Description",
+    "Sheet Width",
+    "Sheet Height",
     "File Name",
     "Date",
     "Time",

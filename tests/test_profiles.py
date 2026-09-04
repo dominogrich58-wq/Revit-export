@@ -144,3 +144,37 @@ class ProfileStoreTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class UiStateTest(unittest.TestCase):
+    """Nastavenia rozhrania zdielaju state.json s aktivnym profilom."""
+
+    def setUp(self):
+        self.folder = tempfile.mkdtemp()
+        self.store = profiles.ProfileStore(self.folder)
+        self.config = config.normalize({"output_folder": self.folder})
+
+    def tearDown(self):
+        shutil.rmtree(self.folder, ignore_errors=True)
+
+    def test_missing_value_returns_the_default(self):
+        self.assertEqual(self.store.get_ui_state("window", "nic"), "nic")
+
+    def test_round_trip(self):
+        self.store.set_ui_state("window", {"w": 1180, "h": 760, "x": 40, "y": 20})
+        self.assertEqual(self.store.get_ui_state("window")["w"], 1180)
+
+    def test_ui_state_and_active_profile_do_not_overwrite_each_other(self):
+        self.store.save("Profil", self.config)
+        self.store.set_active("Profil")
+        self.store.set_ui_state("window", {"w": 900})
+        self.assertEqual(self.store.active_name(), "Profil")
+
+        self.store.set_active("Profil")
+        self.assertEqual(self.store.get_ui_state("window"), {"w": 900})
+
+    def test_damaged_state_file_gives_defaults(self):
+        with io.open(os.path.join(self.folder, profiles.STATE_FILE), "w",
+                     encoding="utf-8") as handle:
+            handle.write(u"nie je JSON")
+        self.assertIsNone(self.store.get_ui_state("window"))

@@ -30,6 +30,7 @@ lib/sheetpilot/         jadro (naming, config, profiles, výber výkresov,
                         exportéry, report)
 dynamo/                 .dyn grafy + zdrojové Python skripty nodov
 pyrevit/                pyRevit extension (Export výkresov / Profily / Spusti profil)
+                        - okná sú v .xaml, ich obsluha v lib/sheetpilot_ui.py
 examples/               ukážkové JSON profily
 tools/build_dyn.py      generátor .dyn grafov zo skriptov v dynamo/python
 tests/                  unit testy logiky (bežia bez Revitu)
@@ -84,7 +85,9 @@ Balík `sheetpilot` sa hľadá v tomto poradí:
 
 Na páse pribudne záložka **SheetPilot** s tromi tlačidlami:
 
-* **Export výkresov** — sprievodca: výkresy → formáty → schéma názvov → PDF spojiť? → DWG setup → usporiadanie → priečinok.
+* **Export výkresov** — jedno okno so všetkým: zoznam výkresov s filtrom a Sheet Setmi,
+  formáty s podvoľbami, skladačka názvu a výstupný priečinok. Po spustení sa okno prepne
+  na ukazovateľ priebehu a potom na výsledok so zoznamom súborov a odkazom na CSV log.
 * **Profily** — správa pomenovaných profilov (nový, prepnúť, kópia, premenovať, zmazať, import, export).
 * **Spusti profil** — spustí uložený profil bez dialógov, ideálne na pravidelné odovzdávky.
 
@@ -93,25 +96,26 @@ Na páse pribudne záložka **SheetPilot** s tromi tlačidlami:
 Názov sa dá poskladať dvoma spôsobmi — naklikaním v pyRevite, alebo napísaním
 šablóny. Obe cesty vedú k tomu istému, klikanie len šablónu skladá za teba.
 
-### Naklikanie (tlačidlo Export výkresov)
+### Naklikanie
 
-V kroku *Schéma názvu* dostaneš okno so **živou ukážkou** na prvom vybranom
-výkrese a zoznamom častí názvu. Časť = jeden parameter obalený prefixom
-a suffixom. Ponuka parametrov sa načíta **zo skutočného modelu** — vstavané
-tokeny, parametre výkresu (`Výkres: …`) a parametre projektu (`Projekt: …`),
-takže si nemusíš pamätať, ako sa čo volá.
+V hlavnom okne vidíš názov ako pás **žiletiek** — jedna žiletka = jedna časť názvu.
+Tlačidlo **Upraviť názov…** otvorí tabuľku, kde má každá časť riadok:
 
-| Voľba | Čo robí |
+| Stĺpec | Význam |
 |---|---|
-| Pridať parameter | vyberieš parameter, potom text pred ním a za ním |
-| Upraviť poslednú časť | náhradná hodnota (napr. `00` pri prázdnej revízii) a veľkosť písmen |
-| Odobrať poslednú časť | krok späť |
-| Prefix / suffix celého názvu | text na začiatku a konci každého súboru, napr. `DSP_` a `_na-schvalenie` |
-| Začať od hotovej schémy | päť pripravených schém |
-| Napísať šablónu ručne | pre tých, čo si chcú tokeny napísať sami |
+| Parameter | zo skutočných parametrov modelu, alebo `(iba text)` pre oddeľovač |
+| Pred / Za | text pred parametrom a za ním, napr. `" - "` alebo `"_"` |
+| Ak prázdne | náhradná hodnota, napr. `00` pri chýbajúcej revízii |
+| Písmená | VEĽKÉ, malé, Prvé Veľké, bez diakritiky, bez medzier |
+| ↑ ↓ ✕ | poradie a odobratie |
 
-Poskladané časti sa uložia do profilu (`file_name_segments`), takže pri ďalšom
-exporte nadviažeš tam, kde si skončil.
+Pod tabuľkou je prefix a suffix celého názvu (napr. `DSP_` a `_na-schvalenie`),
+päť hotových schém a **živá ukážka** na prvom vybranom výkrese.
+
+Ponuka parametrov sa načíta zo skutočného modelu — vstavané tokeny, parametre
+výkresu (`Výkres: …`) a parametre projektu (`Projekt: …`), takže si nemusíš
+pamätať, ako sa čo volá. Poskladané časti sa uložia do profilu
+(`file_name_segments`).
 
 ### Šablóna
 
@@ -120,8 +124,9 @@ exporte nadviažeš tam, kde si skončil.
 ```
 
 Vstavané tokeny: `{Sheet Number}`, `{Sheet Name}`, `{Current Revision}`,
-`{Current Revision Date}`, `{Current Revision Description}`, `{Project Number}`,
-`{File Name}` (názov modelu), `{Date}`, `{Time}`, `{yyyy}`, `{yyyymmdd}`.
+`{Current Revision Date}`, `{Current Revision Description}`, `{Sheet Width}`,
+`{Sheet Height}` (rozmer výkresu v mm), `{Project Number}`, `{File Name}`
+(názov modelu), `{Date}`, `{Time}`, `{yyyy}`, `{yyyymmdd}`.
 Okrem nich funguje **ľubovoľný parameter výkresu**, a ak ho výkres nemá,
 hľadá sa v **Project Information**.
 
@@ -207,6 +212,12 @@ Profil sa dá cez tlačidlo **Profily** vyexportovať do súboru a rozdistribuov
 v tíme, aby všetci odovzdávali rovnako pomenované súbory. Kolega ho načíta tou
 istou cestou (*Načítať profil zo súboru*) a stačí mu prepísať výstupný adresár.
 
+### Živý náhľad rozhrania
+
+`docs/nahlad-okna.html` je klikací náhľad okna v prehliadači — slúžil na
+odsúhlasenie rozloženia pred písaním XAML a hodí sa aj na vysvetlenie
+rozhrania niekomu, kto Revit práve nemá otvorený.
+
 ### Keď sa záložka neobjaví
 
 V `pyrevit/PyRevitTest.extension` je minimálna testovacia extension s jediným
@@ -242,13 +253,19 @@ Po overení sa dá `PyRevitTest.extension` pokojne zmazať.
   nie na skutočnom exporte — po prvom behu si skontroluj, či vedľa hlavných
   DWG nepribudli súbory navyše.
 * Placeholder výkresy sa preskakujú, exportovať sa nedajú.
+* Okno je WPF, takže potrebuje **IronPython engine** pyRevitu (predvolený).
+  Jadro aj tlačidlo *Spusti profil* bežia pod IronPythonom aj CPython3, takže
+  keby okno v tvojej verzii pyRevitu zlyhalo, uložený profil sa dá spustiť aj tak.
+* Export beží na hlavnom vlákne Revitu — inak sa Revit API volať nedá. Okno sa
+  medzi výkresmi prekresľuje, takže priebeh je vidieť a *Prerušiť* reaguje,
+  ale počas exportu sa s Revitom pracovať nedá.
 * Ak je cieľový súbor otvorený v inej aplikácii, export ho preskočí a zapíše
   dôvod do logu namiesto pádu celej dávky.
 
 ## Vývoj
 
 ```bash
-PYTHONPATH=lib:tests python3 -m unittest discover -s tests -v   # 101 testov
+PYTHONPATH=lib:tests python3 -m unittest discover -s tests -v   # 108 testov
 python3 tools/build_dyn.py                                      # regenerácia .dyn grafov
 ```
 

@@ -24,16 +24,34 @@ class FakeDocument(object):
         return None
 
 
+class FakeParameter(object):
+    """Nahrada za DB.Parameter s ciselnou hodnotou v internych jednotkach."""
+
+    def __init__(self, value):
+        self._value = value
+        self.HasValue = True
+
+    def AsDouble(self):
+        return self._value
+
+
 class FakeSheet(object):
-    def __init__(self, number, name, parameters=None):
+    def __init__(self, number, name, parameters=None, size_mm=None):
         self.SheetNumber = number
         self.Name = name
         self.IsPlaceholder = False
         self.Id = FakeElementId(abs(hash(number)) % 100000)
         self._parameters = parameters or {}
+        self._size = size_mm
 
     def LookupParameter(self, name):
         return self._parameters.get(name)
+
+    def get_Parameter(self, built_in):
+        if not self._size:
+            return None
+        index = 0 if "WIDTH" in str(built_in) else 1
+        return FakeParameter(self._size[index] / 304.8)
 
     def GetCurrentRevision(self):
         return FakeElementId(-1)

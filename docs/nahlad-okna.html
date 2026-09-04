@@ -359,7 +359,7 @@
           </div>
           <div class="sheetlist">
             <div class="sheethead">
-              <span></span><span>Číslo</span><span>Názov výkresu</span><span>Papier (mm)</span><span>Rev</span>
+              <span></span><span>Číslo</span><span>Názov výkresu</span><span>Rozmer (mm)</span><span>Rev</span>
             </div>
             <div id="sheetrows"></div>
           </div>
@@ -469,11 +469,9 @@
       <li>
         <div>
           <div class="q">Papier z <code>Sheet Width</code> a <code>Sheet Height</code> <span class="done">hotovo</span></div>
-          <div class="a">Stĺpec ukazuje rozmer v mm a pred ním odvodený formát —
-            <code>A1 841×594</code>. Formát sa počíta z rozmerov (ISO rad A, tolerancia 3 mm),
-            takže funguje aj pri neštandardnej pečiatke; keď rozmer nesedí na žiadny formát,
-            zostane len číslo. V názve súboru máš na výber tri tokeny:
-            <code>{Formát papiera}</code>, <code>{Sheet Width}</code> a <code>{Sheet Height}</code>.</div>
+          <div class="a">Stĺpec ukazuje čistý rozmer v mm — <code>841×594</code>. Dopočítavanie
+            formátu (A1, A0…) som vyhodil, ostávajú len tie dva vstavané parametre.
+            V názve súboru sú dostupné ako <code>{Sheet Width}</code> a <code>{Sheet Height}</code>.</div>
         </div>
       </li>
       <li>
@@ -519,18 +517,9 @@
       </li>
       <li>
         <div>
-          <div class="q">Je názov <em>Formát papiera</em> zrozumiteľný?</div>
-          <div class="a">Ostatné tokeny sú po anglicky, lebo tak sa volajú parametre v Reviteu.
-            Tento je odvodený, takže nemá anglickú predlohu. Nechať po slovensky, alebo
-            <code>{Sheet Format}</code> kvôli konzistencii?</div>
-        </div>
-      </li>
-      <li>
-        <div>
-          <div class="q">Ideme stavať?</div>
-          <div class="a">Rozloženie máme odsúhlasené. Ďalší krok je XAML okno a naviazanie
-            na jadro — a odtiaľ pôjde ladenie cez teba, lebo okno sa dá spustiť len v Reviteu.
-            Ale najprv by som na tvojom modeli overil, že DWG export bez xref naozaj funguje.</div>
+          <div class="q">Staviame <span class="done">prebieha</span></div>
+          <div class="a">Rozloženie je odsúhlasené, okno sa píše v XAML. Tento náhľad zostáva
+            ako referencia — keď budeš chcieť niečo prehodiť, povedz a upravím obe.</div>
         </div>
       </li>
     </ol>
@@ -611,37 +600,13 @@
   };
 
   var PARAMS = [
-    "Sheet Number", "Sheet Name", "Current Revision", "Formát papiera",
+    "Sheet Number", "Sheet Name", "Current Revision",
     "Sheet Width", "Sheet Height", "Date", "yyyymmdd",
     "File Name", "Výkres: Faza", "Projekt: Project Number", "Projekt: Project Name",
     "Projekt: Investor"
   ];
 
-  // Rozmery ISO radu A v mm, dlhsia strana prva.
-  var ISO_A = [["A0", 1189, 841], ["A1", 841, 594], ["A2", 594, 420],
-               ["A3", 420, 297], ["A4", 297, 210]];
-
-  // Sheet Width / Sheet Height su cisla. Format sa z nich da odvodit,
-  // s toleranciou na orezove okraje a zaokruhlenie.
-  function paperFormat(sheet, tolerance) {
-    var long = Math.max(sheet.w, sheet.h), short = Math.min(sheet.w, sheet.h);
-    tolerance = tolerance || 3;
-    for (var i = 0; i < ISO_A.length; i++) {
-      if (Math.abs(long - ISO_A[i][1]) <= tolerance && Math.abs(short - ISO_A[i][2]) <= tolerance) {
-        return ISO_A[i][0];
-      }
-    }
-    return "";
-  }
-
-  function paperLabel(sheet) {
-    var fmt = paperFormat(sheet);
-    return (fmt ? fmt + " " : "") + sheet.w + "×" + sheet.h;
-  }
-
-  var MODS = { "": "bez úpravy", upper: "VEĽKÉ", lower: "malé", title: "Prvé Veľké", slug: "bez diakritiky" };
-
-
+  function paperLabel(sheet) { return sheet.w + "\u00d7" + sheet.h; }
 
   var PRESETS = {
     a: [{ p: "Sheet Number" }, { p: "Sheet Name", pre: " - " }],
@@ -664,7 +629,7 @@
       gp: "", gs: "", pdf: true, dwg: false, combine: true, dir: "C:\\Export\\nahlad", sub: false
     },
     statik: {
-      rows: [{ p: "Sheet Number" }, { p: "Sheet Name", pre: "_" }, { p: "Formát papiera", pre: "_" }],
+      rows: [{ p: "Sheet Number" }, { p: "Sheet Name", pre: "_" }, { p: "Sheet Width", pre: "_" }],
       gp: "ST_", gs: "", pdf: false, dwg: true, combine: false, dir: "C:\\Export\\statika", sub: false
     }
   };
@@ -711,7 +676,6 @@
     if (c === "Sheet Number") return sheet.num;
     if (c === "Sheet Name") return sheet.name;
     if (c === "Current Revision") return sheet.rev;
-    if (c === "Formát papiera") return paperFormat(sheet) || (sheet.w + "x" + sheet.h);
     if (c === "Sheet Width") return String(sheet.w);
     if (c === "Sheet Height") return String(sheet.h);
     if (c === "Date") return t.iso;

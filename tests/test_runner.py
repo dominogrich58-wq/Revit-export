@@ -97,3 +97,25 @@ class PrepareTargetTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class SheetSizeTest(unittest.TestCase):
+    """Rozmer vykresu z Sheet Width / Sheet Height."""
+
+    def test_feet_are_converted_to_whole_millimetres(self):
+        from sheetpilot.sheets import feet_to_mm
+        self.assertEqual(feet_to_mm(1.0), 305)
+        self.assertEqual(feet_to_mm(841 / 304.8), 841)
+        self.assertEqual(feet_to_mm(0.0), 0)
+
+    def test_sheet_without_the_parameters_gives_no_size(self):
+        from sheetpilot.sheets import sheet_size_label, sheet_size_mm
+        sheet = FakeSheet("A-101", "Rez")
+        self.assertEqual(sheet_size_mm(sheet), (None, None))
+        self.assertEqual(sheet_size_label(sheet), "")
+
+    def test_size_tokens_are_empty_when_the_sheet_has_no_size(self):
+        config = normalize({"output_folder": tempfile.gettempdir(),
+                            "file_name_template": "{Sheet Number}{Sheet Width}"})
+        pairs, _ = runner.plan(FakeDocument(), [FakeSheet("A-101", "Rez")], config)
+        self.assertEqual(pairs[0][1], "A-101")

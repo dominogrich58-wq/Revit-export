@@ -121,22 +121,43 @@ class ProfileStore(object):
     def _state_path(self):
         return os.path.join(self.folder, STATE_FILE)
 
-    def active_name(self):
-        """Nazov naposledy pouziteho profilu, alebo None."""
+    def _read_state(self):
         path = self._state_path()
         if not os.path.isfile(path):
-            return None
+            return {}
         try:
-            name = self._read_json(path).get("active")
+            data = self._read_json(path)
         except (ValueError, IOError):
-            return None
+            return {}
+        return data if isinstance(data, dict) else {}
+
+    def _write_state(self, state):
+        if not os.path.isdir(self.folder):
+            os.makedirs(self.folder)
+        self._write_json(self._state_path(), state)
+
+    def active_name(self):
+        """Nazov naposledy pouziteho profilu, alebo None."""
+        name = self._read_state().get("active")
         return name if name and self.exists(name) else None
 
     def set_active(self, name):
-        if not os.path.isdir(self.folder):
-            os.makedirs(self.folder)
-        self._write_json(self._state_path(),
-                         {"active": safe_name(name) if name else None})
+        state = self._read_state()
+        state["active"] = safe_name(name) if name else None
+        self._write_state(state)
+
+    def get_ui_state(self, key, default=None):
+        """Nastavenie rozhrania - napr. velkost a poloha okna.
+
+        Drzi sa oddelene od profilov: profil hovori, co sa exportuje,
+        nie kde ma pouzivatel okno.
+        """
+        return self._read_state().get("ui", {}).get(key, default)
+
+    def set_ui_state(self, key, value):
+        state = self._read_state()
+        state.setdefault("ui", {})[key] = value
+        self._write_state(state)
 
     def active(self):
         """Nastavenia aktivneho profilu, alebo predvolby ak ziadny nie je."""

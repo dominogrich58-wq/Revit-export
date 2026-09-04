@@ -1,0 +1,142 @@
+<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Názov súboru"
+        Width="880" Height="600" MinWidth="720" MinHeight="440"
+        WindowStartupLocation="CenterOwner"
+        ShowInTaskbar="False" SnapsToDevicePixels="True">
+
+  <Window.Resources>
+    <SolidColorBrush x:Key="Accent" Color="#0B6E7A"/>
+    <SolidColorBrush x:Key="AccentInk" Color="#FFFFFF"/>
+    <SolidColorBrush x:Key="Surface" Color="#FFFFFF"/>
+    <SolidColorBrush x:Key="Surface2" Color="#F4F7F9"/>
+    <SolidColorBrush x:Key="Surface3" Color="#E3EAEF"/>
+    <SolidColorBrush x:Key="Line" Color="#C9D4DE"/>
+    <SolidColorBrush x:Key="Muted" Color="#5C6B79"/>
+    <SolidColorBrush x:Key="Warn" Color="#A8621B"/>
+
+    <Style x:Key="Eyebrow" TargetType="TextBlock">
+      <Setter Property="FontSize" Value="10"/>
+      <Setter Property="FontWeight" Value="SemiBold"/>
+      <Setter Property="Foreground" Value="{StaticResource Muted}"/>
+    </Style>
+
+    <Style TargetType="Button">
+      <Setter Property="Padding" Value="10,4"/>
+      <Setter Property="Margin" Value="0,0,6,0"/>
+      <Setter Property="MinWidth" Value="26"/>
+    </Style>
+
+    <Style x:Key="Primary" TargetType="Button">
+      <Setter Property="Padding" Value="22,7"/>
+      <Setter Property="Margin" Value="0"/>
+      <Setter Property="FontWeight" Value="SemiBold"/>
+      <Setter Property="Background" Value="{StaticResource Accent}"/>
+      <Setter Property="Foreground" Value="{StaticResource AccentInk}"/>
+      <Setter Property="BorderBrush" Value="{StaticResource Accent}"/>
+    </Style>
+
+    <Style TargetType="ComboBox">
+      <Setter Property="Height" Value="24"/>
+      <Setter Property="VerticalContentAlignment" Value="Center"/>
+    </Style>
+
+    <Style TargetType="TextBox">
+      <Setter Property="Height" Value="24"/>
+      <Setter Property="Padding" Value="4,3"/>
+      <Setter Property="VerticalContentAlignment" Value="Center"/>
+    </Style>
+  </Window.Resources>
+
+  <Grid Background="{StaticResource Surface}">
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="*"/>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="Auto"/>
+    </Grid.RowDefinitions>
+
+    <Border Grid.Row="0" Background="{StaticResource Accent}" Padding="14,8">
+      <TextBlock Text="Názov súboru" FontWeight="SemiBold" FontSize="14"
+                 Foreground="{StaticResource AccentInk}"/>
+    </Border>
+
+    <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="16,14,16,0">
+      <TextBlock Text="Začať od hotovej schémy" Foreground="{StaticResource Muted}"
+                 VerticalAlignment="Center" Margin="0,0,8,0"/>
+      <ComboBox x:Name="preset_box" Width="330" SelectionChanged="on_preset"/>
+    </StackPanel>
+
+    <!-- hlavicka tabulky -->
+    <Grid Grid.Row="2" Margin="16,14,16,4">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="*"/>
+        <ColumnDefinition Width="110"/>
+        <ColumnDefinition Width="110"/>
+        <ColumnDefinition Width="110"/>
+        <ColumnDefinition Width="130"/>
+        <ColumnDefinition Width="106"/>
+      </Grid.ColumnDefinitions>
+      <TextBlock Grid.Column="0" Text="PARAMETER" Style="{StaticResource Eyebrow}"/>
+      <TextBlock Grid.Column="1" Text="PRED" Style="{StaticResource Eyebrow}" Margin="4,0,0,0"/>
+      <TextBlock Grid.Column="2" Text="ZA" Style="{StaticResource Eyebrow}" Margin="4,0,0,0"/>
+      <TextBlock Grid.Column="3" Text="AK PRÁZDNE" Style="{StaticResource Eyebrow}" Margin="4,0,0,0"/>
+      <TextBlock Grid.Column="4" Text="PÍSMENÁ" Style="{StaticResource Eyebrow}" Margin="4,0,0,0"/>
+    </Grid>
+
+    <Border Grid.Row="3" Margin="16,0" BorderBrush="{StaticResource Line}" BorderThickness="1"
+            Background="{StaticResource Surface2}">
+      <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel x:Name="rows_panel" Margin="4"/>
+      </ScrollViewer>
+    </Border>
+
+    <StackPanel Grid.Row="4" Orientation="Horizontal" Margin="16,10,16,0">
+      <ComboBox x:Name="addparam_box" Width="240" SelectionChanged="on_add_param"
+                Margin="0,0,6,0"/>
+      <Button Content="+ pridať text" Click="on_add_text"/>
+      <TextBlock Text="Pred všetkým" Foreground="{StaticResource Muted}"
+                 VerticalAlignment="Center" Margin="16,0,6,0"/>
+      <TextBox x:Name="gprefix_box" Width="110" FontFamily="Consolas"
+               TextChanged="on_changed" Margin="0,0,6,0"/>
+      <TextBlock Text="Za všetkým" Foreground="{StaticResource Muted}"
+                 VerticalAlignment="Center" Margin="10,0,6,0"/>
+      <TextBox x:Name="gsuffix_box" Width="110" FontFamily="Consolas"
+               TextChanged="on_changed"/>
+    </StackPanel>
+
+    <StackPanel Grid.Row="5" Margin="16,12,16,0">
+      <Border Background="{StaticResource Surface2}" BorderBrush="{StaticResource Line}"
+              BorderThickness="1" Padding="9,6" Margin="0,0,0,6">
+        <StackPanel Orientation="Horizontal">
+          <TextBlock Text="ŠABLÓNA" Style="{StaticResource Eyebrow}" Margin="0,0,10,0"/>
+          <TextBlock x:Name="template_label" FontFamily="Consolas" FontSize="12"
+                     TextWrapping="Wrap"/>
+        </StackPanel>
+      </Border>
+      <Border Background="{StaticResource Surface2}" BorderBrush="{StaticResource Line}"
+              BorderThickness="1" Padding="9,6">
+        <StackPanel Orientation="Horizontal">
+          <TextBlock Text="UKÁŽKA" Style="{StaticResource Eyebrow}" Margin="0,0,10,0"/>
+          <TextBlock x:Name="preview_label" FontFamily="Consolas" FontSize="12"
+                     FontWeight="SemiBold" TextWrapping="Wrap"/>
+        </StackPanel>
+      </Border>
+      <TextBlock x:Name="warn_label" Foreground="{StaticResource Warn}" TextWrapping="Wrap"
+                 Margin="0,6,0,0"/>
+    </StackPanel>
+
+    <DockPanel Grid.Row="6" Margin="16,14,16,14">
+      <TextBlock x:Name="count_label" DockPanel.Dock="Left" Foreground="{StaticResource Muted}"
+                 VerticalAlignment="Center"/>
+      <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" HorizontalAlignment="Right">
+        <Button Content="Zrušiť" Click="on_cancel"/>
+        <Button Content="Použiť" Style="{StaticResource Primary}" Click="on_ok"/>
+      </StackPanel>
+      <TextBlock/>
+    </DockPanel>
+  </Grid>
+</Window>
