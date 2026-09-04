@@ -704,8 +704,11 @@
   function fileName(sheet, list) {
     var out = $("gprefix").value;
     list.forEach(function (r) {
-      var v = r.p ? resolve(sheet, r.p) : "";
-      if (!v) v = r.fb;
+      if (!r.p) { out += r.pre + r.suf; return; }     // cast bez parametra = text
+      var v = resolve(sheet, r.p) || r.fb;
+      // Prazdny parameter bez nahradnej hodnoty vyhodi celu cast aj s
+      // oddelovacom, aby v nazve nezostali osamotene podciarkovniky.
+      if (!v) return;
       out += r.pre + applyMod(v, r.mod) + r.suf;
     });
     out += $("gsuffix").value;

@@ -1,8 +1,14 @@
 # -*- coding: utf-8 -*-
-"""Spustenie ulozeneho profilu bez prechadzania dialogmi."""
+"""Spustenie ulozeneho profilu bez otvarania okna.
 
-__title__ = "Spusti\nprofil"
-__doc__ = "Spusti ulozeny profil exportu na aktualnom modeli."
+Hodi sa na opakovane odovzdavky: profil si nastavis raz v okne Export
+vykresov a odvtedy je export na dva kliky. Tlacidlo nepouziva WPF, takze
+funguje aj tam, kde by sa hlavne okno nepodarilo otvorit.
+"""
+
+__title__ = "Rýchly\nexport"
+__doc__ = ("Spusti ulozeny profil exportu na aktualnom modeli, bez "
+           "otvarania hlavneho okna.")
 
 from pyrevit import forms, revit, script
 

@@ -232,3 +232,45 @@ def describe_segment(segment):
     if suffix:
         core = "%s + '%s'" % (core, suffix)
     return core
+
+
+def render_segments(segments, resolver, prefix="", suffix="", missing=None):
+    """Zlozi nazov priamo z casti, bez medzikroku cez sablonu.
+
+    Rozdiel oproti `render`: ked parameter nema hodnotu a nie je zadana
+    nahradna hodnota, **vynecha sa cela cast** vratane svojho prefixu
+    a suffixu. Vdaka tomu v nazve nezostanu osamotene oddelovace
+    ('A-101__' namiesto 'A-101_02_'). Ak ma na mieste prazdnej hodnoty
+    nieco zostat, patri to do `fallback`.
+    """
+    parts = [_literal(prefix)]
+    for segment in segments or []:
+        name = (segment.get("parameter") or "").strip()
+        before = _literal(segment.get("prefix"))
+        after = _literal(segment.get("suffix"))
+
+        if not name:                      # cast bez parametra je cisty text
+            parts.append(before + after)
+            continue
+
+        try:
+            value = resolver(name)
+        except Exception:
+            value = None
+
+        if value is None or value == "":
+            fallback = (segment.get("fallback") or "").strip()
+            if not fallback:
+                if missing is not None and name not in missing:
+                    missing.append(name)
+                continue                  # cela cast vypadne
+            value = fallback
+
+        value = u"%s" % value
+        modifier = (segment.get("modifier") or "").strip().lower()
+        if modifier in MODIFIERS:
+            value = MODIFIERS[modifier](value)
+        parts.append(before + value + after)
+
+    parts.append(_literal(suffix))
+    return sanitize(u"".join(parts))

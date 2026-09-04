@@ -38,15 +38,28 @@ def resolve_sheets(doc, config):
 def plan(doc, sheet_list, config):
     """Priradi kazdemu vykresu vysledny nazov suboru (bez pripony).
 
-    Vracia (dvojice [(sheet, nazov)], zoznam chybajucich tokenov).
+    Ked su v profile naklikane casti, sklada sa nazov z nich - vtedy
+    parameter bez hodnoty vyhodi celu cast aj s oddelovacom. Rucne pisana
+    sablona takto sofistikovana nie je, tam sa prazdna hodnota nahradi
+    prazdnym retazcom.
+
+    Vracia (dvojice [(sheet, nazov)], zoznam parametrov bez hodnoty).
     """
+    segments = config.get("file_name_segments") or []
     template = effective_template(config)
+    prefix = config.get("file_name_prefix") or ""
+    suffix = config.get("file_name_suffix") or ""
+
     missing, names = [], []
     for sheet in sheet_list:
         per_sheet = []
-        names.append(naming.render(template,
-                                   sheets_mod.make_resolver(doc, sheet),
-                                   per_sheet))
+        resolver = sheets_mod.make_resolver(doc, sheet)
+        if segments:
+            name = naming.render_segments(segments, resolver, prefix, suffix,
+                                          per_sheet)
+        else:
+            name = naming.render(template, resolver, per_sheet)
+        names.append(name)
         for token in per_sheet:
             if token not in missing:
                 missing.append(token)
@@ -90,9 +103,10 @@ def run(doc, user_config, progress=None):
 
     pairs, missing_tokens = plan(doc, selected, config)
     for token in missing_tokens:
-        report.warn(u"Parameter '%s' zo sablony nazvu nema hodnotu - v nazvoch "
-                    u"sa nahradil prazdnym retazcom. Ak ma mat nahradu, zadaj "
-                    u"ju v okne Upravit nazov do stlpca 'Ak prazdne'." % token)
+        report.warn(u"Parameter '%s' nema hodnotu - tato cast nazvu sa "
+                    u"vynechala aj s oddelovacom. Ak ma na jej mieste nieco "
+                    u"zostat, zadaj to v okne Upravit nazov do stlpca "
+                    u"'Ak prazdne'." % token)
 
     formats = config["formats"]
     combine_pdf = config["pdf"]["combine"] and "PDF" in formats

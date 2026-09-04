@@ -187,3 +187,68 @@ class DescribeSegmentTest(unittest.TestCase):
         self.assertEqual(naming.describe_segment({"parameter": "",
                                                   "prefix": "_final"}),
                          "'_final' + (text)")
+
+
+class RenderSegmentsTest(unittest.TestCase):
+    """Cast s prazdnym parametrom vypadne aj s prefixom a suffixom."""
+
+    def setUp(self):
+        self.values = {"Sheet Number": "25AB123", "Sheet Name": "ARS_201",
+                       "Faza": "", "Revizia": ""}
+        self.segments = [
+            {"parameter": "Sheet Number"},
+            {"parameter": "Faza", "prefix": "_"},
+            {"parameter": "Sheet Name", "prefix": "_"},
+        ]
+
+    def render(self, missing=None, **kwargs):
+        return naming.render_segments(self.segments, self.values.get,
+                                      missing=missing, **kwargs)
+
+    def test_empty_parameter_drops_the_whole_part(self):
+        self.assertEqual(self.render(), "25AB123_ARS_201")
+
+    def test_filled_parameter_keeps_its_prefix(self):
+        self.values["Faza"] = "PSP"
+        self.assertEqual(self.render(), "25AB123_PSP_ARS_201")
+
+    def test_fallback_keeps_the_part(self):
+        self.segments[1]["fallback"] = "00"
+        self.assertEqual(self.render(), "25AB123_00_ARS_201")
+
+    def test_suffix_disappears_with_the_part(self):
+        self.segments[1]["suffix"] = "!"
+        self.assertEqual(self.render(), "25AB123_ARS_201")
+
+    def test_dropped_part_is_reported_as_missing(self):
+        missing = []
+        self.render(missing)
+        self.assertEqual(missing, ["Faza"])
+
+    def test_part_with_a_fallback_is_not_reported(self):
+        self.segments[1]["fallback"] = "00"
+        missing = []
+        self.render(missing)
+        self.assertEqual(missing, [])
+
+    def test_text_only_part_always_stays(self):
+        self.segments.append({"parameter": "", "prefix": "_final"})
+        self.assertEqual(self.render(), "25AB123_ARS_201_final")
+
+    def test_global_prefix_and_suffix(self):
+        self.assertEqual(self.render(prefix="DSP_", suffix="_v1"),
+                         "DSP_25AB123_ARS_201_v1")
+
+    def test_modifier_applies_to_the_value_only(self):
+        self.segments[2]["modifier"] = "upper"
+        self.assertEqual(self.render(), "25AB123_ARS_201")
+        self.values["Sheet Name"] = "Rez a-a"
+        self.assertEqual(self.render(), "25AB123_REZ A-A")
+
+    def test_all_parts_empty_gives_a_placeholder_name(self):
+        self.values = {}
+        self.assertEqual(self.render(), "bez-nazvu")
+
+    def test_result_is_sanitized(self):
+        self.values["Sheet Name"] = "Rez A/A"
+        self.assertEqual(self.render(), "25AB123_Rez A_A")

@@ -126,6 +126,7 @@ class NameWindow(forms.WPFWindow):
         self.doc = doc
         self.sheet = sheet
         self.result = None
+        self.dropped = []
         self._rows = []
         self._loading = True
 
@@ -252,19 +253,31 @@ class NameWindow(forms.WPFWindow):
     def refresh(self):
         if self._loading:
             return
-        template = self.template()
-        self.template_label.Text = template or "(prázdna)"
-        if self.sheet is not None and template:
+        segments = self.collect()
+        self.template_label.Text = self.template() or "(prázdna)"
+        if self.sheet is not None and segments:
             resolver = sheets_mod.make_resolver(self.doc, self.sheet)
-            self.preview_label.Text = naming.render(template, resolver)
+            dropped = []
+            self.preview_label.Text = naming.render_segments(
+                segments, resolver, self.gprefix_box.Text, self.gsuffix_box.Text,
+                dropped)
+            self.dropped = dropped
         else:
             self.preview_label.Text = "(nie je z čoho urobiť ukážku)"
+            self.dropped = []
 
         count = len(self._rows)
         self.count_label.Text = u"%d %s" % (
             count, u"časť" if count == 1 else (u"časti" if count < 5 else u"častí"))
-        self.warn_label.Text = "" if template else \
-            u"Názov je prázdny — pridaj aspoň jednu časť."
+        if not self.template():
+            self.warn_label.Text = u"Názov je prázdny — pridaj aspoň jednu časť."
+        elif self.dropped:
+            self.warn_label.Text = (
+                u"Bez hodnoty na tomto výkrese: %s — tieto časti sa z názvu "
+                u"vynechajú aj s oddelovačom. Ak tam má niečo zostať, zadaj to "
+                u"do stĺpca 'Ak prázdne'." % u", ".join(self.dropped))
+        else:
+            self.warn_label.Text = ""
 
     # --- obsluha --------------------------------------------------------
 
@@ -483,10 +496,14 @@ class ExportWindow(forms.WPFWindow):
             chips.append(ChipItem(u"'%s'" % suffix))
         self.chip_list.ItemsSource = chips or [ChipItem(u"(názov nie je nastavený)")]
 
-        template = sp_config.effective_template(self.config)
-        if chosen and template:
+        if chosen:
             resolver = sheets_mod.make_resolver(self.doc, chosen[0].sheet)
-            self.preview_label.Text = naming.render(template, resolver)
+            if segments:
+                self.preview_label.Text = naming.render_segments(
+                    segments, resolver, prefix, suffix)
+            else:
+                self.preview_label.Text = naming.render(
+                    sp_config.effective_template(self.config), resolver)
         else:
             self.preview_label.Text = u"(nie je vybraný žiadny výkres)"
 

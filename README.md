@@ -83,13 +83,20 @@ Balík `sheetpilot` sa hľadá v tomto poradí:
 5. `C:\SheetPilot\lib` — teda to isté miesto ako pri Dynamo návode, takže
    stačí jedna kópia knižnice pre obe rozhrania.
 
-Na páse pribudne záložka **SheetPilot** s tromi tlačidlami:
+Na páse pribudne záložka **SheetPilot** s dvoma tlačidlami:
 
 * **Export výkresov** — jedno okno so všetkým: zoznam výkresov s filtrom a Sheet Setmi,
   formáty s podvoľbami, skladačka názvu a výstupný priečinok. Po spustení sa okno prepne
   na ukazovateľ priebehu a potom na výsledok so zoznamom súborov a odkazom na CSV log.
-* **Profily** — správa pomenovaných profilov (nový, prepnúť, kópia, premenovať, zmazať, import, export).
-* **Spusti profil** — spustí uložený profil bez dialógov, ideálne na pravidelné odovzdávky.
+* **Rýchly export** — spustí uložený profil bez otvárania okna. Na opakované
+  odovzdávky: nastavíš raz, potom sú to dva kliky. Nepoužíva WPF, takže funguje
+  aj tam, kde by sa hlavné okno nepodarilo otvoriť.
+
+Profily sa spravujú priamo v hornej lište hlavného okna, samostatné tlačidlo
+na ne netreba.
+
+Ikony sa generujú skriptom `tools/make_icons.py` — sú kreslené kódom, takže sa
+dajú prekresliť bez grafického editora (`python3 tools/make_icons.py`).
 
 ## Schéma názvov súborov
 
@@ -105,7 +112,7 @@ Tlačidlo **Upraviť názov…** otvorí tabuľku, kde má každá časť riadok
 |---|---|
 | Parameter | zo skutočných parametrov modelu, alebo `(iba text)` pre oddeľovač |
 | Pred / Za | text pred parametrom a za ním, napr. `" - "` alebo `"_"` |
-| Ak prázdne | náhradná hodnota, napr. `00` pri chýbajúcej revízii |
+| Ak prázdne | náhradná hodnota, napr. `00` pri chýbajúcej revízii. **Keď zostane prázdne a parameter nemá hodnotu, vypadne celá časť aj s oddeľovačom** — v názve tak nezostanú osamotené podčiarkovníky |
 | Písmená | VEĽKÉ, malé, Prvé Veľké, bez diakritiky, bez medzier |
 | ↑ ↓ ✕ | poradie a odobratie |
 
@@ -220,21 +227,10 @@ rozhrania niekomu, kto Revit práve nemá otvorený.
 
 ### Keď sa záložka neobjaví
 
-V `pyrevit/PyRevitTest.extension` je minimálna testovacia extension s jediným
-tlačidlom, ktorá nezávisí na ničom zo SheetPilotu. Zaregistruj ju rovnako ako
-hlavnú a spusti:
-
-* **tlačidlo Test sa objaví a funguje** → pyRevit je v poriadku, problém je
-  v balíku SheetPilot,
-* **neobjaví sa** → problém je v pyRevite alebo v ceste zadanej v Custom
-  Extension Directories.
-
 Chyba `Can not de/activate native item: Name: <nieco>` znamená, že názov záložky
 sa zráža s existujúcou záložkou iného doplnku. Preto sa záložka volá
 **SheetPilot**, a nie ProSheets — ten názov už používa DiRoots ProSheets.
 Ak by kolidovala s niečím ďalším, stačí premenovať priečinok `SheetPilot.tab`.
-
-Po overení sa dá `PyRevitTest.extension` pokojne zmazať.
 
 ## Obmedzenia, o ktorých je dobré vedieť
 
@@ -265,8 +261,9 @@ Po overení sa dá `PyRevitTest.extension` pokojne zmazať.
 ## Vývoj
 
 ```bash
-PYTHONPATH=lib:tests python3 -m unittest discover -s tests -v   # 108 testov
+PYTHONPATH=lib:tests python3 -m unittest discover -s tests -v   # 125 testov
 python3 tools/build_dyn.py                                      # regenerácia .dyn grafov
+python3 tools/make_icons.py                                     # prekreslenie ikon
 ```
 
 Python kód nodov uprav v `dynamo/python/*.py` a spusti `tools/build_dyn.py` —

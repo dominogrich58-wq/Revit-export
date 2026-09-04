@@ -119,3 +119,30 @@ class SheetSizeTest(unittest.TestCase):
                             "file_name_template": "{Sheet Number}{Sheet Width}"})
         pairs, _ = runner.plan(FakeDocument(), [FakeSheet("A-101", "Rez")], config)
         self.assertEqual(pairs[0][1], "A-101")
+
+
+class PlanWithSegmentsTest(unittest.TestCase):
+    """plan() musi pri naklikanych castiach vynechavat prazdne useky."""
+
+    def setUp(self):
+        self.doc = FakeDocument()
+
+    def config(self, segments, **extra):
+        data = {"output_folder": tempfile.gettempdir(),
+                "file_name_segments": segments}
+        data.update(extra)
+        return normalize(data)
+
+    def test_missing_parameter_drops_the_part_and_its_separator(self):
+        config = self.config([{"parameter": "Sheet Number"},
+                              {"parameter": "Faza", "prefix": "_"},
+                              {"parameter": "Sheet Name", "prefix": "_"}])
+        pairs, missing = runner.plan(self.doc, [FakeSheet("A-101", "Rez")], config)
+        self.assertEqual(pairs[0][1], "A-101_Rez")
+        self.assertEqual(missing, ["Faza"])
+
+    def test_manual_template_still_substitutes_an_empty_string(self):
+        config = normalize({"output_folder": tempfile.gettempdir(),
+                            "file_name_template": "{Sheet Number}_{Faza}_{Sheet Name}"})
+        pairs, _ = runner.plan(self.doc, [FakeSheet("A-101", "Rez")], config)
+        self.assertEqual(pairs[0][1], "A-101__Rez")
