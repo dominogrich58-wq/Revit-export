@@ -85,14 +85,14 @@ def run(doc, user_config, progress=None):
 
     selected = resolve_sheets(doc, config)
     if not selected:
-        report.skipped("-", "-", "-", "Vyberu nezodpoveda ziadny vykres.")
+        report.warn(u"Vyberu nezodpoveda ziadny vykres.")
         return report
 
     pairs, missing_tokens = plan(doc, selected, config)
     for token in missing_tokens:
-        report.skipped("-", "-", "-",
-                       u"Parameter '%s' zo sablony nazvu nema hodnotu - "
-                       u"v nazvoch sa nahradil prazdnym retazcom." % token)
+        report.warn(u"Parameter '%s' zo sablony nazvu nema hodnotu - v nazvoch "
+                    u"sa nahradil prazdnym retazcom. Ak ma mat nahradu, zadaj "
+                    u"ju v okne Upravit nazov do stlpca 'Ak prazdne'." % token)
 
     formats = config["formats"]
     combine_pdf = config["pdf"]["combine"] and "PDF" in formats
@@ -116,7 +116,8 @@ def run(doc, user_config, progress=None):
             elif fmt == "DWG":
                 _export_dwgs(doc, pairs, folder, config, report, step)
     except Cancelled:
-        report.skipped("-", "-", "-", "Davka prerusena pouzivatelom.")
+        report.warn(u"Davka prerusena pouzivatelom - zvysne vykresy sa "
+                    u"nevyexportovali.")
 
     return report
 

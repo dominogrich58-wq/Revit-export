@@ -722,6 +722,12 @@ class ExportWindow(forms.WPFWindow):
             report.count(OK), report.count(SKIPPED), report.count(FAILED),
             report.elapsed)
         self.result_list.ItemsSource = [ResultItem(r) for r in report.results]
+
+        if report.warnings:
+            self.warn_label.Text = u"\n".join(report.warnings)
+            self.warn_box.Visibility = Visibility.Visible
+        else:
+            self.warn_box.Visibility = Visibility.Collapsed
         self.result_note.Text = (
             u"Časť výkresov sa nevyexportovala — dôvod je v stĺpci vpravo a v CSV logu."
             if report.has_failures() else u"Všetky výkresy prešli.")

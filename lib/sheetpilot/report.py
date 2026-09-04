@@ -8,6 +8,7 @@ import time
 OK = "OK"
 SKIPPED = "PRESKOCENE"
 FAILED = "CHYBA"
+WARNING = "UPOZORNENIE"
 
 
 class Result(object):
@@ -37,7 +38,19 @@ class Report(object):
 
     def __init__(self):
         self.results = []
+        self.warnings = []
         self.started = time.time()
+
+    def warn(self, message):
+        """Poznamka k davke, ktora nie je vysledkom ziadneho suboru.
+
+        Napr. ze parameter zo sablony nazvu nema hodnotu. Do poctov
+        OK / preskocene / chyby sa nerata - inak by suhrn tvrdil, ze sa
+        nieco nevyexportovalo, hoci sa vyexportovalo vsetko.
+        """
+        if message not in self.warnings:
+            self.warnings.append(message)
+        return message
 
     def add(self, result):
         self.results.append(result)
@@ -72,9 +85,11 @@ class Report(object):
 
     def lines(self):
         """Citatelny vypis pre Dynamo watch node alebo konzolu."""
-        rows = [u"%s | %s | %s | %s" % (r.status.ljust(11), r.fmt.ljust(4),
-                                        r.sheet_number, r.path or r.message)
-                for r in self.results]
+        rows = [u"%s | %s" % (WARNING.ljust(11), message)
+                for message in self.warnings]
+        rows += [u"%s | %s | %s | %s" % (r.status.ljust(11), r.fmt.ljust(4),
+                                         r.sheet_number, r.path or r.message)
+                 for r in self.results]
         return rows + [u"", self.summary()]
 
     def write_csv(self, folder, file_name=None):
@@ -85,8 +100,11 @@ class Report(object):
         path = os.path.join(folder, name)
         with io.open(path, "w", encoding="utf-8-sig", newline="") as handle:
             handle.write(u";".join(self.HEADER) + u"\r\n")
-            for result in self.results:
+            rows = [["-", "-", "-", WARNING, "", message]
+                    for message in self.warnings]
+            rows += [result.as_row() for result in self.results]
+            for row in rows:
                 cells = [u'"%s"' % (u"%s" % cell).replace(u'"', u'""')
-                         for cell in result.as_row()]
+                         for cell in row]
                 handle.write(u";".join(cells) + u"\r\n")
         return path

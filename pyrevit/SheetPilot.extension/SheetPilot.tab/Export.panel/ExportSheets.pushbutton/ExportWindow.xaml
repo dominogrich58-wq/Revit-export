@@ -73,14 +73,14 @@
 
     <!-- farebna horna lista -->
     <Border Grid.Row="0" Background="{StaticResource Accent}" Padding="14,8">
-      <DockPanel>
+      <DockPanel LastChildFill="False">
         <TextBlock DockPanel.Dock="Left" Text="SheetPilot" FontWeight="SemiBold"
                    FontSize="14" Foreground="{StaticResource AccentInk}"
                    VerticalAlignment="Center"/>
         <TextBlock DockPanel.Dock="Left" x:Name="model_label" Margin="12,0,0,0"
                    FontFamily="Consolas" FontSize="12" Opacity="0.75"
                    Foreground="{StaticResource AccentInk}" VerticalAlignment="Center"/>
-        <TextBlock DockPanel.Dock="Right" x:Name="version_label" Opacity="0.7"
+        <TextBlock DockPanel.Dock="Right" x:Name="version_label" Opacity="0.7" Margin="12,0,0,0"
                    FontSize="11" Foreground="{StaticResource AccentInk}"
                    VerticalAlignment="Center"/>
       </DockPanel>
@@ -333,11 +333,20 @@
 
       <TextBlock Grid.Row="0" x:Name="result_head" Style="{StaticResource Eyebrow}"/>
 
-      <Border Grid.Row="1" Background="{StaticResource Surface2}"
-              BorderBrush="{StaticResource Line}" BorderThickness="1"
-              Padding="12,8" Margin="0,0,0,10">
-        <TextBlock x:Name="result_summary" Style="{StaticResource Mono}" FontSize="13"/>
-      </Border>
+      <StackPanel Grid.Row="1" Margin="0,0,0,10">
+        <Border Background="{StaticResource Surface2}" BorderBrush="{StaticResource Line}"
+                BorderThickness="1" Padding="12,8">
+          <TextBlock x:Name="result_summary" Style="{StaticResource Mono}" FontSize="13"/>
+        </Border>
+        <Border x:Name="warn_box" Background="{StaticResource Surface2}"
+                BorderBrush="{StaticResource Warn}" BorderThickness="2,0,0,0"
+                Padding="10,6" Margin="0,8,0,0" Visibility="Collapsed">
+          <StackPanel>
+            <TextBlock Text="UPOZORNENIA" Style="{StaticResource Eyebrow}" Margin="0,0,0,4"/>
+            <TextBlock x:Name="warn_label" TextWrapping="Wrap" FontSize="12"/>
+          </StackPanel>
+        </Border>
+      </StackPanel>
 
       <Border Grid.Row="2" BorderBrush="{StaticResource Line}" BorderThickness="1">
         <ListBox x:Name="result_list" BorderThickness="0"
