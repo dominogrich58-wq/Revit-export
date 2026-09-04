@@ -112,13 +112,6 @@
   }
   .titlebar button:hover { background: color-mix(in srgb, var(--accent-ink) 26%, transparent); }
 
-  .swatches { display: flex; gap: 4px; }
-  .swatch {
-    width: 15px; height: 15px; border-radius: 50%; padding: 0; cursor: pointer;
-    border: 1px solid color-mix(in srgb, var(--accent-ink) 45%, transparent);
-  }
-  .swatch:hover { filter: brightness(1.1); }
-  .swatch[aria-pressed="true"] { box-shadow: 0 0 0 2px var(--accent), 0 0 0 3.5px var(--accent-ink); }
   .themebtn { font-size: 12px; padding: 2px 8px; }
 
   .profilebar {
@@ -128,7 +121,7 @@
   .lbl { font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
   .profilebar .spacer { flex: 1; }
 
-  .body-grid { display: grid; grid-template-columns: 430px 1fr; }
+  .body-grid { display: grid; grid-template-columns: 462px 1fr; }
   @media (max-width: 940px) { .body-grid { grid-template-columns: 1fr; } }
 
   .col-sheets { border-right: 1px solid var(--line-soft); }
@@ -150,7 +143,7 @@
     max-height: 330px; overflow-y: auto;
   }
   .sheethead, .sheetrow {
-    display: grid; grid-template-columns: 18px 48px 1fr 74px 34px; align-items: center; gap: 9px;
+    display: grid; grid-template-columns: 18px 48px 1fr 104px 34px; align-items: center; gap: 9px;
     padding: 5px 10px;
   }
   .sheethead {
@@ -163,7 +156,7 @@
   .sheetrow .num { font-family: var(--mono); font-size: 12px; font-weight: 500; }
   .sheetrow .nm { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .paper {
-    font-family: var(--mono); font-size: 11px; color: var(--muted);
+    font-family: var(--mono); font-size: 10.5px; color: var(--muted);
     overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
   }
   .rev { font-family: var(--mono); font-size: 11px; color: var(--muted); text-align: right; }
@@ -329,8 +322,6 @@
       <span class="name">SheetPilot — export výkresov</span>
       <span class="model">BD_Vajnorska_R26.rvt</span>
       <span class="chrome">
-        <span class="lbl">Vzhľad</span>
-        <span class="swatches" id="swatches"></span>
         <button type="button" class="themebtn" id="themebtn">Systém</button>
         <span class="close">✕</span>
       </span>
@@ -368,7 +359,7 @@
           </div>
           <div class="sheetlist">
             <div class="sheethead">
-              <span></span><span>Číslo</span><span>Názov výkresu</span><span>Papier</span><span>Rev</span>
+              <span></span><span>Číslo</span><span>Názov výkresu</span><span>Papier (mm)</span><span>Rev</span>
             </div>
             <div id="sheetrows"></div>
           </div>
@@ -466,24 +457,23 @@
 
   <div class="review">
     <h2>Zapracované a čo ešte otvorené</h2>
-    <p>Napíš mi číslo otázky a odpoveď. Vybavené body nechávam v zozname, aby bolo vidieť,
-       čo sme si už odsúhlasili.</p>
+    <p>Vybavené body nechávam v zozname, aby bolo vidieť, na čom sme sa dohodli.
+       Nové otázky sú na konci.</p>
     <ol>
       <li>
         <div>
           <div class="q">Rozdelenie na dva stĺpce <span class="done">hotovo</span></div>
-          <div class="a">Zoznam výkresov je širší o 60 px a vyšší o dva riadky.</div>
+          <div class="a">Zoznam výkresov je širší a vyšší.</div>
         </div>
       </li>
       <li>
         <div>
-          <div class="q">Papier v zozname — z ktorého parametra ho brať?</div>
-          <div class="a">Toto ešte potrebujem od teba. Písal si, že tam bude číslo, nie formát —
-            takže hodnota nepríde z formátu papiera, ale z niečoho vo výkrese. Otvor si
-            v Reviteu vlastnosti výkresu a napíš mi <b>presný názov parametra</b> a čo v ňom máš
-            (napr. <code>Sheet Size</code> → <code>A1</code>, alebo typ rohovej pečiatky →
-            <code>594x841</code>). Stĺpec potom vypíše presne túto hodnotu a bude sa dať použiť
-            aj ako token v názve súboru.</div>
+          <div class="q">Papier z <code>Sheet Width</code> a <code>Sheet Height</code> <span class="done">hotovo</span></div>
+          <div class="a">Stĺpec ukazuje rozmer v mm a pred ním odvodený formát —
+            <code>A1 841×594</code>. Formát sa počíta z rozmerov (ISO rad A, tolerancia 3 mm),
+            takže funguje aj pri neštandardnej pečiatke; keď rozmer nesedí na žiadny formát,
+            zostane len číslo. V názve súboru máš na výber tri tokeny:
+            <code>{Formát papiera}</code>, <code>{Sheet Width}</code> a <code>{Sheet Height}</code>.</div>
         </div>
       </li>
       <li>
@@ -495,39 +485,52 @@
       </li>
       <li>
         <div>
-          <div class="q">Farebná lišta <span class="done">hotovo</span></div>
-          <div class="a">Titulok je teraz vyfarbený, nie sivý. Prvá farba zostáva predvolená.
-            Ostatné štyri si môžeš preklikať a povedať, či ich vôbec chceš — pokojne ich
-            zredukujem na jednu firemnú.</div>
+          <div class="q">Jedna farba <span class="done">hotovo</span></div>
+          <div class="a">Ostala tyrkysová lišta, výber farieb je preč. Zostal len prepínač
+            svetlý / tmavý / podľa systému.</div>
         </div>
       </li>
       <li>
         <div>
           <div class="q">Zoznam vzniknutých súborov <span class="done">hotovo</span></div>
-          <div class="a">Ostáva až po exporte, ako si chcel.</div>
+          <div class="a">Ukáže sa až po exporte.</div>
         </div>
       </li>
       <li>
         <div>
-          <div class="q">Priebeh exportu <span class="done">hotovo</span></div>
-          <div class="a">Okno sa prepne na ukazovateľ priebehu s možnosťou prerušiť, potom
-            na výsledok so súhrnom a odkazom na CSV log. <em>Späť na nastavenia</em> ťa vráti
-            na formulár so všetkým, čo si mal nastavené.</div>
+          <div class="q">Priebeh exportu v okne <span class="done">hotovo</span></div>
+          <div class="a">Okno sa prepne na priebeh a potom na výsledok.</div>
         </div>
       </li>
       <li>
         <div>
-          <div class="q">Čo má okno spraviť, keď jeden výkres zlyhá?</div>
-          <div class="a">Teraz to jadro rieši tak, že pokračuje ďalej a chybu zapíše do logu —
-            jeden pokazený výkres nezhodí celú dávku. Vyhovuje, alebo chceš pri chybe zastať
-            a opýtať sa?</div>
+          <div class="q">Pri chybe pokračovať <span class="done">hotovo</span></div>
+          <div class="a">Presne tak to jadro už robí — chyba jedného výkresu sa zapíše do logu
+            a dávka ide ďalej. Vo výsledku pribudne riadok so stavom <em>CHYBA</em> a dôvodom.</div>
         </div>
       </li>
       <li>
         <div>
-          <div class="q">Má si okno pamätať veľkosť a polohu?</div>
-          <div class="a">Dá sa uložiť medzi nastavenia, aby sa ti otváralo tam, kde si ho nechal.
-            Drobnosť, ale pri dvoch monitoroch to je rozdiel.</div>
+          <div class="q">Pamätať si veľkosť a polohu okna <span class="done">hotovo</span></div>
+          <div class="a">Uloží sa do nastavení používateľa, nie do profilu exportu — profil
+            je o tom, čo sa exportuje, nie o tom, kde máš okno. Pri prvom spustení sa okno
+            otvorí v strede obrazovky.</div>
+        </div>
+      </li>
+      <li>
+        <div>
+          <div class="q">Je názov <em>Formát papiera</em> zrozumiteľný?</div>
+          <div class="a">Ostatné tokeny sú po anglicky, lebo tak sa volajú parametre v Reviteu.
+            Tento je odvodený, takže nemá anglickú predlohu. Nechať po slovensky, alebo
+            <code>{Sheet Format}</code> kvôli konzistencii?</div>
+        </div>
+      </li>
+      <li>
+        <div>
+          <div class="q">Ideme stavať?</div>
+          <div class="a">Rozloženie máme odsúhlasené. Ďalší krok je XAML okno a naviazanie
+            na jadro — a odtiaľ pôjde ladenie cez teba, lebo okno sa dá spustiť len v Reviteu.
+            Ale najprv by som na tvojom modeli overil, že DWG export bez xref naozaj funguje.</div>
         </div>
       </li>
     </ol>
@@ -589,15 +592,15 @@
 
 <script>
   var SHEETS = [
-    { num: "101", name: "Situácia",        paper: "A1", rev: "",   set: ["dsp"],        faza: "DSP" },
-    { num: "201", name: "Pôdorys 1.NP",    paper: "A0", rev: "01", set: ["dsp","arch"], faza: "DSP" },
-    { num: "202", name: "Pôdorys 2.NP",    paper: "A0", rev: "01", set: ["dsp","arch"], faza: "DSP" },
-    { num: "203", name: "Pôdorys strechy", paper: "A1", rev: "",   set: ["arch"],       faza: "DSP" },
-    { num: "301", name: "Rez A-A",         paper: "A1", rev: "02", set: ["dsp","arch"], faza: "DSP" },
-    { num: "302", name: "Rez B-B",         paper: "A1", rev: "",   set: ["arch"],       faza: "DSP" },
-    { num: "401", name: "Pohľad juh",      paper: "A2", rev: "01", set: ["arch"],       faza: "DSP" },
-    { num: "402", name: "Pohľad sever",    paper: "A2", rev: "01", set: ["arch"],       faza: "DSP" },
-    { num: "501", name: "Detail atiky",    paper: "A3", rev: "",   set: [],             faza: "RP"  }
+    { num: "101", name: "Situácia",        w: 841,  h: 594, rev: "",   set: ["dsp"],        faza: "DSP" },
+    { num: "201", name: "Pôdorys 1.NP",    w: 1189, h: 841, rev: "01", set: ["dsp","arch"], faza: "DSP" },
+    { num: "202", name: "Pôdorys 2.NP",    w: 1189, h: 841, rev: "01", set: ["dsp","arch"], faza: "DSP" },
+    { num: "203", name: "Pôdorys strechy", w: 841,  h: 594, rev: "",   set: ["arch"],       faza: "DSP" },
+    { num: "301", name: "Rez A-A",         w: 841,  h: 594, rev: "02", set: ["dsp","arch"], faza: "DSP" },
+    { num: "302", name: "Rez B-B",         w: 841,  h: 594, rev: "",   set: ["arch"],       faza: "DSP" },
+    { num: "401", name: "Pohľad juh",      w: 594,  h: 420, rev: "01", set: ["arch"],       faza: "DSP" },
+    { num: "402", name: "Pohľad sever",    w: 594,  h: 420, rev: "01", set: ["arch"],       faza: "DSP" },
+    { num: "501", name: "Detail atiky",    w: 420,  h: 297, rev: "",   set: [],             faza: "RP"  }
   ];
 
   var PROJECT = {
@@ -608,20 +611,37 @@
   };
 
   var PARAMS = [
-    "Sheet Number", "Sheet Name", "Current Revision", "Sheet Size", "Date", "yyyymmdd",
+    "Sheet Number", "Sheet Name", "Current Revision", "Formát papiera",
+    "Sheet Width", "Sheet Height", "Date", "yyyymmdd",
     "File Name", "Výkres: Faza", "Projekt: Project Number", "Projekt: Project Name",
     "Projekt: Investor"
   ];
 
+  // Rozmery ISO radu A v mm, dlhsia strana prva.
+  var ISO_A = [["A0", 1189, 841], ["A1", 841, 594], ["A2", 594, 420],
+               ["A3", 420, 297], ["A4", 297, 210]];
+
+  // Sheet Width / Sheet Height su cisla. Format sa z nich da odvodit,
+  // s toleranciou na orezove okraje a zaokruhlenie.
+  function paperFormat(sheet, tolerance) {
+    var long = Math.max(sheet.w, sheet.h), short = Math.min(sheet.w, sheet.h);
+    tolerance = tolerance || 3;
+    for (var i = 0; i < ISO_A.length; i++) {
+      if (Math.abs(long - ISO_A[i][1]) <= tolerance && Math.abs(short - ISO_A[i][2]) <= tolerance) {
+        return ISO_A[i][0];
+      }
+    }
+    return "";
+  }
+
+  function paperLabel(sheet) {
+    var fmt = paperFormat(sheet);
+    return (fmt ? fmt + " " : "") + sheet.w + "×" + sheet.h;
+  }
+
   var MODS = { "": "bez úpravy", upper: "VEĽKÉ", lower: "malé", title: "Prvé Veľké", slug: "bez diakritiky" };
 
-  var ACCENTS = {
-    teal:  { light: ["#0b6e7a", "#d9edef", "#ffffff"], dark: ["#46b6c2", "#17323a", "#06222a"] },
-    blue:  { light: ["#1e5aa8", "#dce7f6", "#ffffff"], dark: ["#6fa8e8", "#1a2b42", "#0a1b30"] },
-    slate: { light: ["#44546a", "#dfe4ea", "#ffffff"], dark: ["#9fb2c8", "#26313d", "#101922"] },
-    amber: { light: ["#9a6212", "#f3e5cd", "#ffffff"], dark: ["#d9a44e", "#372a15", "#2a1c06"] },
-    plum:  { light: ["#7a3f6d", "#eddfea", "#ffffff"], dark: ["#c78fb8", "#332030", "#2b1526"] }
-  };
+
 
   var PRESETS = {
     a: [{ p: "Sheet Number" }, { p: "Sheet Name", pre: " - " }],
@@ -644,12 +664,12 @@
       gp: "", gs: "", pdf: true, dwg: false, combine: true, dir: "C:\\Export\\nahlad", sub: false
     },
     statik: {
-      rows: [{ p: "Sheet Number" }, { p: "Sheet Name", pre: "_" }, { p: "Sheet Size", pre: "_" }],
+      rows: [{ p: "Sheet Number" }, { p: "Sheet Name", pre: "_" }, { p: "Formát papiera", pre: "_" }],
       gp: "ST_", gs: "", pdf: false, dwg: true, combine: false, dir: "C:\\Export\\statika", sub: false
     }
   };
 
-  var selected = {}, rows = [], draft = [], theme = "system", accent = "teal";
+  var selected = {}, rows = [], draft = [], theme = "system";
   ["101", "201", "202", "301"].forEach(function (n) { selected[n] = true; });
 
   var $ = function (id) { return document.getElementById(id); };
@@ -668,24 +688,9 @@
   function applyLook() {
     var root = document.documentElement;
     if (theme === "system") { delete root.dataset.theme; } else { root.dataset.theme = theme; }
-    var set = ACCENTS[accent][effectiveDark() ? "dark" : "light"];
-    root.style.setProperty("--accent", set[0]);
-    root.style.setProperty("--accent-soft", set[1]);
-    root.style.setProperty("--accent-ink", set[2]);
     $("themebtn").textContent = theme === "system" ? "Systém" : (theme === "light" ? "Svetlý" : "Tmavý");
-    Array.prototype.forEach.call($("swatches").children, function (b) {
-      b.setAttribute("aria-pressed", b.dataset.accent === accent ? "true" : "false");
-    });
   }
 
-  Object.keys(ACCENTS).forEach(function (key) {
-    var b = document.createElement("button");
-    b.className = "swatch"; b.type = "button"; b.dataset.accent = key;
-    b.title = key; b.setAttribute("aria-label", "Farba " + key);
-    b.style.background = ACCENTS[key].light[0];
-    b.addEventListener("click", function () { accent = key; applyLook(); });
-    $("swatches").appendChild(b);
-  });
   $("themebtn").addEventListener("click", function () {
     theme = theme === "system" ? "light" : (theme === "light" ? "dark" : "system");
     applyLook();
@@ -706,7 +711,9 @@
     if (c === "Sheet Number") return sheet.num;
     if (c === "Sheet Name") return sheet.name;
     if (c === "Current Revision") return sheet.rev;
-    if (c === "Sheet Size") return sheet.paper;
+    if (c === "Formát papiera") return paperFormat(sheet) || (sheet.w + "x" + sheet.h);
+    if (c === "Sheet Width") return String(sheet.w);
+    if (c === "Sheet Height") return String(sheet.h);
     if (c === "Date") return t.iso;
     if (c === "yyyymmdd") return t.comp;
     if (c === "Faza") return sheet.faza;
@@ -746,7 +753,7 @@
     var q = $("filter").value.toLowerCase(), set = $("sheetset").value;
     return SHEETS.filter(function (s) {
       if (set && s.set.indexOf(set) === -1) return false;
-      return !q || (s.num + " " + s.name + " " + s.paper).toLowerCase().indexOf(q) !== -1;
+      return !q || (s.num + " " + s.name + " " + paperLabel(s)).toLowerCase().indexOf(q) !== -1;
     });
   }
   function chosen() { return SHEETS.filter(function (s) { return selected[s.num]; }); }
@@ -763,7 +770,7 @@
       row.innerHTML = '<input type="checkbox"' + (selected[s.num] ? " checked" : "") + '>' +
         '<span class="num">' + s.num + '</span>' +
         '<span class="nm">' + esc(s.name) + '</span>' +
-        '<span class="paper">' + s.paper + '</span>' +
+        '<span class="paper">' + paperLabel(s) + '</span>' +
         '<span class="rev">' + (s.rev ? "R" + s.rev : "—") + '</span>';
       row.querySelector("input").addEventListener("change", function (e) {
         selected[s.num] = e.target.checked;
